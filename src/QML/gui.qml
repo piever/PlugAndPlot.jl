@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
 import org.julialang 1.0
 
@@ -15,7 +15,8 @@ Rectangle {
         Repeater {
             model: selectModel
             Column {
-                Text { text: name }
+                //Text { text: name }
+                Button {text : name; checked : false; checkable : true}
                 Repeater {
                     model: attributes
                     CheckBox {
