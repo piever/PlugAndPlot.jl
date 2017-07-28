@@ -1,8 +1,10 @@
 module ManipulateTable
 
-using Gtk
+using QML, StatPlots
 
-include("build_window.jl")
+export DataColumn
 
+include("types.jl")
+include("select_functions.jl")
 
 end # module
