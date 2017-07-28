@@ -7,18 +7,15 @@ mutable struct Attribute
   accepted::Bool
 end
 # Julia Fruit model item. Each field is automatically a role, by default
-struct DataColumn
+struct DataColumn{T<:Union{Array{Attribute},ListModel}}
   name::String
-  attributes::ListModel
-  _attributes::Array{Attribute}
+  attributes::T
 end
-
 
 
 # Construct using attributes from an array of QVariantMap, as in the append call in QML
 function DataColumn(name, descriptions::Array{T}) where T<:AbstractString
-    _attributes = Attribute.(descriptions, true)
-    return DataColumn(name, ListModel(_attributes), _attributes)
+    return DataColumn(name, Attribute.(descriptions, true))
 end
 
 # Use a view, since no ApplicationWindow is provided in the QML
@@ -29,6 +26,11 @@ qview = init_qquickview()
 selectlist = [
     DataColumn("Subject", ["1", "2", "3"]),
     DataColumn("Treatment",  ["true", "false"])]
+
+function ListModel(v::Array{DataColumn{T}}) where {T<:Array{Attribute}}
+    w = [DataColumn(dc.name,ListModel(dc.attributes)) for dc in v]
+    return ListModel(w)
+end
 
 # Set a context property with our listmodel
 @qmlset qmlcontext().selectModel = ListModel(selectlist)
