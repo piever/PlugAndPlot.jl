@@ -7,6 +7,10 @@ Rectangle {
     id: container
     width: 500; height: 400
     color: "white"
+    Item {
+        id: res
+        property double result: 0.0
+    }
     Row {
         Repeater {
             model: selectModel
@@ -14,7 +18,11 @@ Rectangle {
                 Text { text: name }
                 Repeater {
                     model: attributes
-                    CheckBox { text: description }
+                    CheckBox {
+                        text: description;
+                        checked : accepted;
+                        onClicked: { accepted = checked}
+                    }
                 }
             }
         }
