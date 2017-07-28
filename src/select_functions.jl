@@ -16,7 +16,7 @@ function choose_data(a,d)
 end
 
 function combine(index, func::Function, values)
-    return index & broadcast(func,values)
+    return index .& broadcast(func,values)
 end
 
 function combine{T}(index, els::AbstractArray{T,1}, values)
