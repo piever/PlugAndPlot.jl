@@ -1,3 +1,12 @@
+function choose_data(a, sc::AbstractArray)
+    d = Dict()
+    for s in sc
+        d[Symbol(s.name)] = [attr.description for attr in s.attributes if attr.accepted]
+    end
+    choose_data(a,d)
+end
+
+
 function choose_data(a,d)
     index = broadcast(t -> true, 1:(size(a,1)))
     for key in keys(d)
@@ -11,7 +20,7 @@ function combine(index, func::Function, values)
 end
 
 function combine{T}(index, els::AbstractArray{T,1}, values)
-    func = t -> (t in els)
+    func = t -> (string(t) in els)
     return combine(index, func, values)
 end
 

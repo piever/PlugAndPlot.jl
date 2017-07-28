@@ -7,10 +7,8 @@ using DataFrames
 school = RDatasets.dataset("mlmRev","Hsb82");
 
 
-selectlist = [DataColumn(string(name), union(school[name]))
+selectlist = [DataColumn(string(name), string.(union(school[name])))
     for name in names(school) if length(union(school[name])) < 5]
-
-selectlist
 
 # run QML window
 qview = init_qquickview()
@@ -20,4 +18,6 @@ set_source(qview, qml_file)
 QML.show(qview)
 
 exec()
+
+selectdata = choose_data(school, selectlist)
 return

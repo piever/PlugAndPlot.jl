@@ -2,7 +2,7 @@ module ManipulateTable
 
 using QML, StatPlots
 
-export DataColumn
+export DataColumn, choose_data
 
 include("types.jl")
 include("select_functions.jl")
