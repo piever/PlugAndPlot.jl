@@ -9,11 +9,12 @@ Rectangle {
     color: "white"
     Row {
         Repeater {
-            model: fruitModel
+            model: selectModel
             Column {
+                Text { text: name }
                 Repeater {
                     model: attributes
-                    Text { text: "Data: " + description }
+                    CheckBox { text: description }
                 }
             }
         }
