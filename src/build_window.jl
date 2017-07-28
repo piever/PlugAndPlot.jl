@@ -1,7 +1,15 @@
-function build_window(datafile)
+function build_window(; kwargs...)
+    @qmlapp joinpath(Pkg.dir("ManipulateTable","src"), "QML", "choose_file.qml")
+    path = Path("")
+    @qmlset qmlcontext().choose = path
+    exec()
+    return build_window(clean(path); kwargs...)
+end
+
+function build_window(datafile; nbox = 5)
     df = readtable(datafile)#DataFrame(FileIO.load(datafile))
     selectlist = [DataColumn(string(name), string.(union(df[name])))
-        for name in names(df) if length(union(df[name])) < 5]
+        for name in names(df) if length(union(df[name])) < nbox]
 
     # run QML window
     qview = init_qquickview()

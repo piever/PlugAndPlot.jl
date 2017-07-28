@@ -1,6 +1,6 @@
 module ManipulateTable
 
-using QML, StatPlots, FileIO, DataFrames
+using QML, StatPlots, DataFrames
 
 export DataColumn, choose_data, build_window
 

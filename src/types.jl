@@ -1,3 +1,12 @@
+mutable struct Path
+    file::String
+end
+
+function clean(p::Path)
+    (p.file == "") && error("No file selected")
+    return split(p.file,":/")[2]
+end
+
 mutable struct Attribute
   description::String
   accepted::Bool
