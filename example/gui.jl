@@ -3,8 +3,6 @@ using DataFrames
 using StatPlots
 #using FileIO
 using ClobberingReload
-#creload("ManipulateTable")
-datafile = joinpath(dirname(Base.source_path()), "school.csv")
-df, selectlist, plotvalues = build_window(datafile)
-plt = get_plot(df, selectlist, plotvalues)
-display(plt)
+creload("ManipulateTable")
+datafile = joinpath(Pkg.dir("ManipulateTable","example"), "school.csv")
+build_window(datafile)

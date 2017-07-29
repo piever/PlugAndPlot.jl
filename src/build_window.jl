@@ -1,3 +1,10 @@
+mutable struct Shared
+    df::DataFrame
+    selectlist::Vector{Column}
+    plotvalues::Vector{ComboBoxType}
+end
+shared = Shared(DataFrame(),Column[], ComboBoxType[])
+
 function build_window(; kwargs...)
     @qmlapp joinpath(Pkg.dir("ManipulateTable","src"), "QML", "choose_file.qml")
     path = Path("")
@@ -7,21 +14,30 @@ function build_window(; kwargs...)
 end
 
 function build_window(datafile; nbox = 5)
-    df = readtable(datafile)#DataFrame(FileIO.load(datafile))
-    selectlist = [Column(string(name), string.(union(df[name])))
+    shared.df = readtable(datafile)#DataFrame(FileIO.load(datafile))
+    shared.selectlist = [Column(string(name), string.(union(df[name])))
         for name in names(df) if length(union(df[name])) < nbox]
 
     # run QML window
-    qview = init_qquickview()
-    @qmlset qmlcontext()._selectlist = ListModel(selectlist)
-    plotvalues = get_plotvalues(df)
-    @qmlset qmlcontext()._plotvalues = ListModel(plotvalues)
+    qml_engine = init_qmlapplicationengine()
+    @qmlset qmlcontext()._selectlist = ListModel(shared.selectlist)
+    shared.plotvalues = get_plotvalues(df)
+    @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
+
+    #@qmlfunction plotsin
+    @qmlfunction my_function
     qml_file = joinpath(Pkg.dir("ManipulateTable","src"), "QML", "gui.qml")
-    set_source(qview, qml_file)
-    QML.show(qview)
+    load(qml_engine,qml_file)
 
     exec()
     return df, selectlist,plotvalues
+end
+
+
+function my_function(d::JuliaDisplay)
+    plt = get_plot(shared.df, shared.selectlist, shared.plotvalues)
+    display(d, plt)
+    return
 end
 
 function get_plotvalues(df)

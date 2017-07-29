@@ -3,10 +3,10 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
 import org.julialang 1.0
 
-Rectangle {
-    id: container
-    width: 500; height: 400
-    color: "white"
+ApplicationWindow {
+    title: "Analysis GUI"
+    width: 500; height: 700
+    visible: true
     Item {
         id: res
         property double result: 0.0
@@ -35,7 +35,8 @@ Rectangle {
                         text : name;
                         checked : false;
                         checkable : true;
-                        onClicked: { split = checked}
+                        onClicked: { split = checked;
+                        Julia.my_function(jdisp)}
                     }
                     Repeater {
                         model: _values
@@ -48,5 +49,10 @@ Rectangle {
                 }
             }
         }
+        JuliaDisplay {
+            id: jdisp
+            width: 500; height: 500
+        }
     }
+
 }
