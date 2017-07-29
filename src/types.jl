@@ -22,7 +22,14 @@ end
 
 Column(name, values::AbstractArray) = Column(name, false, Value.(collect(values), true))
 
-mutable struct PlotValues
-    x::Int32
-    y::Int32
+mutable struct ComboBoxEntry
+    value::String
+end
+
+mutable struct ComboBoxType
+    name::String
+    chosen_index::Int32
+    options::Vector{ComboBoxEntry}
+    _options::ListModel
+    ComboBoxType(name, index, options) = new(name, index, options, ListModel(options))
 end

@@ -13,10 +13,14 @@ Rectangle {
     }
     Column{
         Row{
-            ComboBox {
-                currentIndex: 0
-                model: xvalues
-                onCurrentIndexChanged: {_plotvalues.x = currentIndex}
+            Repeater {
+                model: _plotvalues
+                ComboBox {
+                    currentIndex: 0
+                    textRole: "value"
+                    model: _options
+                    onCurrentIndexChanged: {chosen_index = currentIndex}
+                }
             }
         }
         Row {

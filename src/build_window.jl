@@ -14,15 +14,15 @@ function build_window(datafile; nbox = 5)
     # run QML window
     qview = init_qquickview()
     @qmlset qmlcontext()._selectlist = ListModel(selectlist)
-    julia_array = ["A", 1, 2.2]
-    myrole(x::AbstractString) = lowercase(x)
-    myrole(x::Number) = Int(round(x))
+    # julia_array = ["A", 1, 2.2]
+    #myrole(x::AbstractString) = x
+    #myrole(x::Number) = Int(round(x))
+    #
+    # array_model = ListModel(julia_array)
 
-    array_model = ListModel(julia_array)
-    addrole(array_model, "myrole", myrole, setindex!)
-    @qmlset qmlcontext().xvalues = array_model
-    plotvalues = PlotValues(0,0)
-    @qmlset qmlcontext()._plotvalues = plotvalues
+    plotvalues = ComboBoxType.(["X","Y"],0,[ComboBoxEntry.(["aaa","b", "c"]),ComboBoxEntry.(["aaa","b", "c"])] )
+    #addrole.(getfield.(plotvalues, :_options), "myrole", myrole, setindex!)
+    @qmlset qmlcontext()._plotvalues = ListModel(plotvalues)
     qml_file = joinpath(Pkg.dir("ManipulateTable","src"), "QML", "gui.qml")
     set_source(qview, qml_file)
     QML.show(qview)
