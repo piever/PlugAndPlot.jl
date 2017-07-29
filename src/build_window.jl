@@ -14,20 +14,20 @@ function build_window(datafile; nbox = 5)
     # run QML window
     qview = init_qquickview()
     @qmlset qmlcontext()._selectlist = ListModel(selectlist)
-    # julia_array = ["A", 1, 2.2]
-    #myrole(x::AbstractString) = x
-    #myrole(x::Number) = Int(round(x))
-    #
-    # array_model = ListModel(julia_array)
-
-    plotvalues = ComboBoxType.(["X","Y"],0,[ComboBoxEntry.(["aaa","b", "c"]),ComboBoxEntry.(["aaa","b", "c"])] )
-    #addrole.(getfield.(plotvalues, :_options), "myrole", myrole, setindex!)
+    plotvalues = get_plotvalues(df)
     @qmlset qmlcontext()._plotvalues = ListModel(plotvalues)
     qml_file = joinpath(Pkg.dir("ManipulateTable","src"), "QML", "gui.qml")
     set_source(qview, qml_file)
     QML.show(qview)
 
     exec()
-    selectdata = choose_data(df, selectlist)
-    return selectdata, selectlist,plotvalues
+    return df, selectlist,plotvalues
+end
+
+function get_plotvalues(df)
+    xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))))
+    ylist = union(names(df),[:hazard, :locreg, :density, :cumulative])
+    yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)))
+    plottype = ComboBoxType("PLOT TYPE",  ComboBoxEntry.(["bar", "path", "scatter"]))
+    return [xvalues, yvalues, plottype]
 end

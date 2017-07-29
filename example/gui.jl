@@ -1,7 +1,10 @@
 using ManipulateTable
 using DataFrames
+using StatPlots
 #using FileIO
 using ClobberingReload
-creload("ManipulateTable")
+#creload("ManipulateTable")
 datafile = joinpath(dirname(Base.source_path()), "school.csv")
-selectdata, selectlist, plotvalues = build_window(datafile)
+df, selectlist, plotvalues = build_window(datafile)
+plt = get_plot(df, selectlist, plotvalues)
+display(plt)

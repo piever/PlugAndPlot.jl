@@ -28,8 +28,8 @@ end
 
 mutable struct ComboBoxType
     name::String
-    chosen_index::Int32
+    chosen_value::String
     options::Vector{ComboBoxEntry}
     _options::ListModel
-    ComboBoxType(name, index, options) = new(name, index, options, ListModel(options))
+    ComboBoxType(name, options) = new(name, options[1].value, options, ListModel(options))
 end

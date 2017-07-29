@@ -15,11 +15,13 @@ Rectangle {
         Row{
             Repeater {
                 model: _plotvalues
-                ComboBox {
-                    currentIndex: 0
-                    textRole: "value"
-                    model: _options
-                    onCurrentIndexChanged: {chosen_index = currentIndex}
+                Column {
+                    Text {text : name}
+                    ComboBox {
+                        textRole: "value"
+                        model: _options
+                        onCurrentIndexChanged: {chosen_value = currentText}
+                    }
                 }
             }
         }
