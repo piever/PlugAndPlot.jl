@@ -15,13 +15,13 @@ end
 
 function build_window(datafile; nbox = 5)
     shared.df = readtable(datafile)#DataFrame(FileIO.load(datafile))
-    shared.selectlist = [Column(string(name), string.(union(df[name])))
-        for name in names(df) if length(union(df[name])) < nbox]
+    shared.selectlist = [Column(string(name), string.(union(shared.df[name])))
+        for name in names(shared.df) if length(union(shared.df[name])) < nbox]
 
     # run QML window
     qml_engine = init_qmlapplicationengine()
     @qmlset qmlcontext()._selectlist = ListModel(shared.selectlist)
-    shared.plotvalues = get_plotvalues(df)
+    shared.plotvalues = get_plotvalues(shared.df)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
 
     #@qmlfunction plotsin
@@ -30,11 +30,12 @@ function build_window(datafile; nbox = 5)
     load(qml_engine,qml_file)
 
     exec()
-    return df, selectlist,plotvalues
+    return shared
 end
 
 
-function my_function(d::JuliaDisplay)
+function my_function(d::JuliaDisplay, width, height)
+    gr(grid = false, size=(Int64(round(width)),Int64(round(height))))
     plt = get_plot(shared.df, shared.selectlist, shared.plotvalues)
     display(d, plt)
     return

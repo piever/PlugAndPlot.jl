@@ -5,7 +5,7 @@ import org.julialang 1.0
 
 ApplicationWindow {
     title: "Analysis GUI"
-    width: 500; height: 700
+    width: 1000; height: 700
     visible: true
     Item {
         id: res
@@ -24,6 +24,10 @@ ApplicationWindow {
                     }
                 }
             }
+            Button {
+                text : "PLOT";
+                onClicked : Julia.my_function(jdisp, jdisp.width, jdisp.height)
+            }
         }
         Row {
 
@@ -35,8 +39,7 @@ ApplicationWindow {
                         text : name;
                         checked : false;
                         checkable : true;
-                        onClicked: { split = checked;
-                        Julia.my_function(jdisp)}
+                        onClicked: { split = checked;}
                     }
                     Repeater {
                         model: _values
@@ -51,7 +54,7 @@ ApplicationWindow {
         }
         JuliaDisplay {
             id: jdisp
-            width: 500; height: 500
+            width: 800; height: 500
         }
     }
 
