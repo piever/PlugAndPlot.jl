@@ -11,23 +11,33 @@ Rectangle {
         id: res
         property double result: 0.0
     }
-    Row {
-        Repeater {
-            model: _selectlist
-            Column {
-                //Text { text: name }
-                Button {
-                    text : name;
-                    checked : false;
-                    checkable : true;
-                    onClicked: { split = checked}
-                }
-                Repeater {
-                    model: _values
-                    CheckBox {
-                        text: name;
-                        checked : accepted;
-                        onClicked: { accepted = checked}
+    Column{
+        Row{
+            ComboBox {
+                currentIndex: 0
+                model: xvalues
+                onCurrentIndexChanged: {_plotvalues.x = currentIndex}
+            }
+        }
+        Row {
+
+            Repeater {
+                model: _selectlist
+                Column {
+                    //Text { text: name }
+                    Button {
+                        text : name;
+                        checked : false;
+                        checkable : true;
+                        onClicked: { split = checked}
+                    }
+                    Repeater {
+                        model: _values
+                        CheckBox {
+                            text: name;
+                            checked : accepted;
+                            onClicked: { accepted = checked}
+                        }
                     }
                 }
             }

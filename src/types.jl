@@ -21,3 +21,8 @@ mutable struct Column
 end
 
 Column(name, values::AbstractArray) = Column(name, false, Value.(collect(values), true))
+
+mutable struct PlotValues
+    x::Int32
+    y::Int32
+end
