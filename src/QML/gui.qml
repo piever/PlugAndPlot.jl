@@ -13,14 +13,19 @@ Rectangle {
     }
     Row {
         Repeater {
-            model: selectModel
+            model: _selectlist
             Column {
                 //Text { text: name }
-                Button {text : name; checked : false; checkable : true}
+                Button {
+                    text : name;
+                    checked : false;
+                    checkable : true;
+                    onClicked: { split = checked}
+                }
                 Repeater {
-                    model: attributes
+                    model: _values
                     CheckBox {
-                        text: description;
+                        text: name;
                         checked : accepted;
                         onClicked: { accepted = checked}
                     }

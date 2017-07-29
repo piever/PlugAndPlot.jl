@@ -7,21 +7,17 @@ function clean(p::Path)
     return split(p.file,":/")[2]
 end
 
-mutable struct Attribute
-  description::String
+mutable struct Value
+  name::String
   accepted::Bool
 end
 
-struct DataColumn{T<:Union{Array{Attribute},ListModel}}
+mutable struct Column
   name::String
-  attributes::T
+  split::Bool
+  values::Vector{Value}
+  _values::ListModel
+  Column(name, split, values) = new(name, split, values, ListModel(values))
 end
 
-function DataColumn(name, descriptions::AbstractArray{T}) where T<:AbstractString
-    return DataColumn(name, Attribute.(collect(descriptions), true))
-end
-
-function QML.ListModel(v::Array{DataColumn{T}}) where {T<:Array{Attribute}}
-    w = [DataColumn(dc.name,ListModel(dc.attributes)) for dc in v]
-    return ListModel(w)
-end
+Column(name, values::AbstractArray) = Column(name, false, Value.(collect(values), true))

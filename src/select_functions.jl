@@ -1,7 +1,7 @@
 function choose_data(a, sc::AbstractArray)
     d = Dict()
     for s in sc
-        d[Symbol(s.name)] = [attr.description for attr in s.attributes if attr.accepted]
+        d[Symbol(s.name)] = [value.name for value in s.values if value.accepted]
     end
     choose_data(a,d)
 end
