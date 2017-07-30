@@ -30,7 +30,7 @@ function build_window(datafile; nbox = 5)
     load(qml_engine,qml_file)
 
     exec()
-    return shared
+    return
 end
 
 

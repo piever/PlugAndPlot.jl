@@ -20,7 +20,10 @@ ApplicationWindow {
                     ComboBox {
                         textRole: "value"
                         model: _options
-                        onCurrentIndexChanged: {chosen_value = currentText}
+                        onCurrentIndexChanged: {
+                            if (currentText != "")
+                                chosen_value = currentText
+                        }
                     }
                 }
             }
