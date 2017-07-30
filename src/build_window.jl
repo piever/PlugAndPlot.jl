@@ -14,9 +14,11 @@ function build_window(; kwargs...)
 end
 
 function build_window(datafile; nbox = 5)
-    shared.df = readtable(datafile)#DataFrame(FileIO.load(datafile))
+    #shared.df = DataFrame(FileIO.load(datafile))#DataFrame(FileIO.load(datafile))
+    cols, name_cols = csvread(String(datafile); header_exists = true)
+    shared.df = DataFrame(collect(cols), Symbol.(name_cols))
     shared.selectlist = [Column(string(name), string.(union(shared.df[name])))
-        for name in names(shared.df) if length(union(shared.df[name])) < nbox]
+        for name in names(shared.df) if (1 < length(union(shared.df[name])) < nbox)]
 
     # run QML window
     qml_engine = init_qmlapplicationengine()
@@ -27,7 +29,7 @@ function build_window(datafile; nbox = 5)
     #@qmlfunction plotsin
     @qmlfunction my_function
     qml_file = joinpath(Pkg.dir("ManipulateTable","src"), "QML", "gui.qml")
-    load(qml_engine,qml_file)
+    QML.load(qml_engine,qml_file)
 
     exec()
     return
@@ -39,12 +41,4 @@ function my_function(d::JuliaDisplay, width, height)
     plt = get_plot(shared.df, shared.selectlist, shared.plotvalues)
     display(d, plt)
     return
-end
-
-function get_plotvalues(df)
-    xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))))
-    ylist = union(names(df),[:hazard, :locreg, :density, :cumulative])
-    yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)))
-    plottype = ComboBoxType("PLOT TYPE",  ComboBoxEntry.(["bar", "path", "scatter"]))
-    return [xvalues, yvalues, plottype]
 end

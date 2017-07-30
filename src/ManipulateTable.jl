@@ -1,6 +1,7 @@
 module ManipulateTable
 
-using QML, StatPlots, DataFrames
+using QML, StatPlots, DataFrames, TextParse
+gr()
 
 export choose_data, build_window, get_plot, my_function
 
