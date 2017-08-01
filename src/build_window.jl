@@ -10,7 +10,7 @@ function build_window(; kwargs...)
     path = Path("")
     @qmlset qmlcontext().choose = path
     exec()
-    return build_window(clean(path); kwargs...)
+    return build_window(path.file; kwargs...)
 end
 
 function build_window(datafile; nbox = 5)
