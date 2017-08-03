@@ -21,7 +21,7 @@ function build_window(datafile; nbox = 5)
     shared.selectlist = [Column(string(name), string.(union(shared.df[name])))
         for name in names(shared.df) if (1 < length(union(shared.df[name])) < nbox)]
 
-    shared.selectvalues = [SpinBoxType(string(name), [extrema(shared.df[name])...])
+    shared.selectvalues = [SpinBoxType(string(name), Float64.([extrema(shared.df[name])...]))
         for name in names(shared.df) if length(union(shared.df[name])) > nbox &&
         eltype(shared.df[name]) <: Real]
     # run QML window
