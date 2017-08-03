@@ -11,8 +11,9 @@ end
 
 
 
-function get_plot(df, selectlist, plotvalues)
-    selectdata = choose_data(df, selectlist)
+function get_plot(shared)
+    df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
+    selectdata = choose_data(shared)
     xval, yval, line, axis_type, compute_error = getfield.(plotvalues, :chosen_value)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     grp_error = groupapply(Symbol(yval),

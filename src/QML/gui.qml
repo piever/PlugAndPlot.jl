@@ -55,6 +55,30 @@ ApplicationWindow {
                 }
             }
         }
+        Row {
+
+            Repeater {
+                model: _selectvalues
+                Column {
+                    //Text { text: name }
+                    Text {
+                        text : name;
+                        //checked : false;
+                        //checkable : true;
+                        //onClicked: { split = checked;}
+                    }
+                    Repeater {
+                        model: _values
+                        SpinBox {
+                            minimumValue: min_value
+                            maximumValue: max_value
+                            value: selected_value;
+                            onEditingFinished : {selected_value = value}
+                        }
+                    }
+                }
+            }
+        }
         JuliaDisplay {
             id: jdisp
             width: 800; height: 500

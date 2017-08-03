@@ -1,11 +1,13 @@
-function choose_data(a, sc::AbstractArray)
+function choose_data(shared)
     d = Dict()
-    for s in sc
+    for s in shared.selectlist
         d[Symbol(s.name)] = [value.name for value in s.values if value.accepted]
     end
-    choose_data(a,d)
+    for s in shared.selectvalues
+        d[Symbol(s.name)] = (t -> (s.values[1].selected_value <= t <= s.values[2].selected_value))
+    end
+    choose_data(shared.df, d)
 end
-
 
 function choose_data(a,d)
     index = broadcast(t -> true, 1:(size(a,1)))
