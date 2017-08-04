@@ -1,5 +1,6 @@
 julia 0.6
-QML
+
+QML 0.4.2 0.5-
 StatPlots
 DataFrames
 TextParse
