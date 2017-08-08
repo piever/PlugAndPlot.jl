@@ -1,4 +1,4 @@
-# ManipulateTable
+# PlugAndPlot
 
 [![Build Status](https://travis-ci.org/piever/ManipulateTable.jl.svg?branch=master)](https://travis-ci.org/piever/ManipulateTable.jl)
 

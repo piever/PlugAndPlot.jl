@@ -1,4 +1,4 @@
-module ManipulateTable
+module PlugAndPlot
 
 using QML, StatPlots, DataFrames, TextParse
 gr()

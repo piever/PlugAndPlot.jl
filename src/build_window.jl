@@ -7,7 +7,7 @@ end
 shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[])
 
 function build_window(; kwargs...)
-    @qmlapp joinpath(Pkg.dir("ManipulateTable","src"), "QML", "choose_file.qml")
+    @qmlapp joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "choose_file.qml")
     path = Path("")
     @qmlset qmlcontext().choose = path
     exec()
@@ -33,7 +33,7 @@ function build_window(datafile; nbox = 5)
 
     #@qmlfunction plotsin
     @qmlfunction my_function
-    qml_file = joinpath(Pkg.dir("ManipulateTable","src"), "QML", "gui.qml")
+    qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")
     QML.load(qml_engine,qml_file)
 
     exec()
