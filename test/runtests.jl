@@ -1,4 +1,4 @@
-using ManipulateTable
+using PlugAndPlot
 using Base.Test
 
 # write your own tests here
