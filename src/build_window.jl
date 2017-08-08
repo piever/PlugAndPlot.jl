@@ -7,7 +7,7 @@ end
 shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[])
 
 """
-    build_window()
+    build_window(; kwargs...)
 
 Starts the GUI asking for a suitable csv file.
 """
@@ -19,15 +19,31 @@ function build_window(; kwargs...)
     return build_window(path.file; kwargs...)
 end
 
-function build_window(datafile; nbox = 5)
-    #shared.df = DataFrame(FileIO.load(datafile))#DataFrame(FileIO.load(datafile))
-    cols, name_cols = csvread(String(datafile); header_exists = true)
-    shared.df = DataFrame(collect(cols), Symbol.(name_cols))
+"""
+    build_window(datafile::AbstractString; kwargs...)
+
+Reads a csv file and starts build_window on the corresponding DataFrame
+"""
+function build_window(datafile::AbstractString; kwargs...)
+    cols, name_cols = csvread(datafile; header_exists = true)
+    dataset = DataFrame(collect(cols), Symbol.(name_cols))
+    return build_window(dataset; kwargs...)
+end
+
+"""
+    build_window(dataset::AbstractDataFrame; nbox = 5)
+
+Creates a GUI to analyze a DataFrame interactively. Data can be selected either
+on continuous columns, with SpinBoxes or on discrete columns with checkboxes,
+provided there are less than `nbox` entries.
+"""
+function build_window(dataset::AbstractDataFrame; nbox = 5)
+    shared.df = dataset
     shared.selectlist = [Column(string(name), string.(union(shared.df[name])))
         for name in names(shared.df) if (1 < length(union(shared.df[name])) < nbox)]
 
     shared.selectvalues = [SpinBoxType(string(name), Float64.([extrema(shared.df[name])...]))
-        for name in names(shared.df) if length(union(shared.df[name])) > nbox &&
+        for name in names(shared.df) if length(union(shared.df[name])) >= nbox &&
         eltype(shared.df[name]) <: Real]
     # run QML window
     qml_engine = init_qmlapplicationengine()
