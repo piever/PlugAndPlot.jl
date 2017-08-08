@@ -5,9 +5,11 @@ os:
   - osx
 julia:
   - 0.6
-
 notifications:
   email: false
+
+env:
+  - DOCUMENTER_DEBUG = true
 
 after_success:
   - julia -e 'cd(Pkg.dir("PlugAndPlot")); Pkg.add("Documenter"); include(joinpath("docs", "make.jl"))';
