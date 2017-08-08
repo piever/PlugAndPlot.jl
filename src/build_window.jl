@@ -6,6 +6,11 @@ mutable struct Shared
 end
 shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[])
 
+"""
+    build_window()
+
+Starts the GUI asking for a suitable csv file.
+"""
 function build_window(; kwargs...)
     @qmlapp joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "choose_file.qml")
     path = Path("")
