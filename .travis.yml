@@ -1,22 +1,15 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
-matrix:
-  include:
-    - os: linux
-      env:
-        - QML_SKIP_GUI_TESTS=1
-      before_script:
-        - "export DISPLAY=:99.0"
-        - "sh -e /etc/init.d/xvfb start"
-        - sleep 3 # give xvfb some time to start
-        - "export GALLIUM_DRIVER=\"softpipe\""
-      julia: 0.6
-    - os: osx
-      julia: 0.6
-
+os:
+  - linux
+  - osx
+julia:
+  - 0.6
 notifications:
   email: false
 
+env:
+  - DOCUMENTER_DEBUG = true
 # script:
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 #  - julia -e 'Pkg.clone(pwd())'
