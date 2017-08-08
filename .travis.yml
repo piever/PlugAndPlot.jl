@@ -10,6 +10,8 @@ notifications:
 
 env:
   - DOCUMENTER_DEBUG = true
-
+script:
+ - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+ - julia -e 'Pkg.clone(pwd())'
 after_success:
   - julia -e 'cd(Pkg.dir("PlugAndPlot")); Pkg.add("Documenter"); include(joinpath("docs", "make.jl"))';
