@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Description...">
+  <meta name="author" content="piever">
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Home - PlugAndPlot.jl</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  <link href="./assets/Documenter.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> PlugAndPlot.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#plugandplotjl">PlugAndPlot.jl</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#installation">Installation</a></li>
+        
+            <li><a class="toctree-l3" href="#documentation">Documentation</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">PlugAndPlot.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/piever/PlugAndPlot.jl/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='PlugAndPlot.jl-1'></a></p>
+<h1 id="plugandplotjl">PlugAndPlot.jl</h1>
+<p>GUI to create statistical plots from a DataFrame, using DataFrames, QML and StatPlots</p>
+<p><a id='Installation-1'></a></p>
+<h2 id="installation">Installation</h2>
+<p>The package is not yet registered in Julia's package registry, and so it must be installed using</p>
+<pre><code class="julia">Pkg.clone(&quot;https://github.com/piever/PlugAndPlot.jl.git&quot;)
+</code></pre>
+
+<p><a id='Documentation-1'></a></p>
+<h2 id="documentation">Documentation</h2>
+<p><a id='PlugAndPlot.build_window' href='#PlugAndPlot.build_window'>#</a>
+<strong><code>PlugAndPlot.build_window</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>build_window(; kwargs...)
+</code></pre>
+
+<p>Starts the GUI asking for a suitable csv file.</p>
+<p><a target='_blank' href='https://github.com/piever/PlugAndPlot.jl/tree/dbfab6c62f56d6c4e1fdadc544c3fd6ae45858c7/src/build_window.jl#L9-L13' class='documenter-source'>source</a><br></p>
+<pre><code>build_window(datafile::AbstractString; kwargs...)
+</code></pre>
+
+<p>Reads a csv file and starts build_window on the corresponding DataFrame</p>
+<p><a target='_blank' href='https://github.com/piever/PlugAndPlot.jl/tree/dbfab6c62f56d6c4e1fdadc544c3fd6ae45858c7/src/build_window.jl#L22-L26' class='documenter-source'>source</a><br></p>
+<pre><code>build_window(dataset::AbstractDataFrame; nbox = 5)
+</code></pre>
+
+<p>Creates a GUI to analyze a DataFrame interactively. Data can be selected either on continuous columns, with SpinBoxes or on discrete columns with checkboxes, provided there are less than <code>nbox</code> entries.</p>
+<p><a target='_blank' href='https://github.com/piever/PlugAndPlot.jl/tree/dbfab6c62f56d6c4e1fdadc544c3fd6ae45858c7/src/build_window.jl#L33-L39' class='documenter-source'>source</a><br></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/piever/PlugAndPlot.jl" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script src="./js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="./assets/mathjaxhelper.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.16.3
+Build Date UTC : 2017-08-09 00:40:39
+-->
