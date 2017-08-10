@@ -6,12 +6,8 @@ using TextParse
 using CSV
 creload("PlugAndPlot")
 datafile = joinpath(Pkg.dir("PlugAndPlot","example"), "school.csv")
-cols, name_cols = csvread(datafile; header_exists = true)
-dataset = DataFrame(collect(cols), Symbol.(name_cols))
-dataset = CSV.read(datafile, nullable = false, weakrefstrings = false)
-dataset = readtable(datafile)
+# cols, name_cols = csvread(datafile; header_exists = true)
+# dataset = DataFrame(collect(cols), Symbol.(name_cols))
+# dataset = CSV.read(datafile, nullable = false, weakrefstrings = false)
+# dataset = readtable(datafile)
 build_window(datafile)
-
-using QML
-PlugAndPlot.SpinBoxType("Ciao", [1,2])
-build_window()

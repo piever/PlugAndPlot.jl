@@ -5,7 +5,7 @@ import org.julialang 1.0
 
 ApplicationWindow {
     title: "Analysis GUI"
-    width: 1000; height: 700
+    width: 1000; height: 800
     visible: true
     Item {
         id: res
@@ -82,6 +82,11 @@ ApplicationWindow {
         JuliaDisplay {
             id: jdisp
             width: 800; height: 500
+        }
+        TextField{
+            placeholderText: "insert keywords here"
+            width: 800
+            onEditingFinished : {choose.value = text}
         }
     }
 

@@ -16,7 +16,7 @@ FileDialog {
     folder: shortcuts.home
     onAccepted: {
         console.log("You chose: " + fileDialog.fileUrl)
-        choose.file = fileDialog.fileUrl
+        choose.value = fileDialog.fileUrl
         Qt.quit()
     }
     onRejected: {

@@ -1,5 +1,5 @@
-mutable struct Path
-    file::String
+mutable struct TextBoxEntry
+    value::String
 end
 
 mutable struct Value

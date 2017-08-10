@@ -3,8 +3,9 @@ mutable struct Shared
     selectvalues::Vector{SpinBoxType}
     selectlist::Vector{Column}
     plotvalues::Vector{ComboBoxType}
+    plotkwargs::TextBoxEntry
 end
-shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[])
+shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[], TextBoxEntry(""))
 
 """
     build_window(; kwargs...)
@@ -13,10 +14,10 @@ Starts the GUI asking for a suitable csv file.
 """
 function build_window(; kwargs...)
     @qmlapp joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "choose_file.qml")
-    path = Path("")
+    path = TextBoxEntry("")
     @qmlset qmlcontext().choose = path
     exec()
-    return build_window(path.file; kwargs...)
+    return build_window(path.value; kwargs...)
 end
 
 """
@@ -51,7 +52,7 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext()._selectvalues = ListModel(shared.selectvalues)
     shared.plotvalues = get_plotvalues(shared.df)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
-
+    @qmlset qmlcontext().choose = shared.plotkwargs
     #@qmlfunction plotsin
     @qmlfunction my_function
     qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")
