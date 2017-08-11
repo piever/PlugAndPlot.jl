@@ -26,6 +26,11 @@ ApplicationWindow {
                                 chosen_value = currentText
                         }
                     }
+                    TextField{
+                        placeholderText: "specify operation"
+                        visible: ask_info
+                        onEditingFinished : {text_info = text}
+                    }
                 }
             }
             Column{

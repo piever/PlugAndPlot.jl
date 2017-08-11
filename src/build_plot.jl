@@ -1,12 +1,12 @@
 function get_plotvalues(df)
-    xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))))
+    xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))), true)
     ylist = union([:hazard, :density, :cumulative],names(df))
-    yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)))
-    plot_type = ComboBoxType("PLOT TYPE",  ComboBoxEntry.(["bar", "path", "scatter"]))
-    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["auto", "discrete", "continuous"]))
+    yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)), true)
+    plot_type = ComboBoxType("PLOT TYPE",  ComboBoxEntry.(["bar", "path", "scatter"]), false)
+    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["auto", "discrete", "continuous"]), false)
     errorlist = union([:none], "across " .* string.(names(df)))
-    compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist))
-    analysis_type = ComboBoxType("ANALYSIS TYPE",  ComboBoxEntry.(["Population", "Individual"]))
+    compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
+    analysis_type = ComboBoxType("ANALYSIS TYPE",  ComboBoxEntry.(["Population", "Individual"]), false)
     return [xvalues, yvalues, plot_type, axis_type, compute_error, analysis_type]
 end
 
@@ -19,6 +19,9 @@ function get_plot(shared)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     plt = plot()
+    x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
+    xfunc = x_info == "" ? mean : eval(parse(x_info))
+    yfunc = y_info == "" ? mean : eval(parse(y_info))
     if analysis_type == "Population"
         grp_error = groupapply(Symbol(yval),
             selectdata,
@@ -31,13 +34,13 @@ function get_plot(shared)
     else
         if length(group_vars) == 0
             summary_df = by(selectdata, convert_error_type(compute_error)[2]) do dd_subject
-                DataFrame(x = mean(dd_subject[Symbol(xval)]), y = mean(dd_subject[Symbol(yval)]))
+                DataFrame(x = xfunc(dd_subject[Symbol(xval)]), y = yfunc(dd_subject[Symbol(yval)]))
             end
             scatter!(plt, summary_df, :x, :y; label = "", extra_kwargs...)
         else
             by(selectdata, group_vars) do dd
                 summary_df = by(dd, convert_error_type(compute_error)[2]) do dd_subject
-                    DataFrame(x = mean(dd_subject[Symbol(xval)]), y = mean(dd_subject[Symbol(yval)]))
+                    DataFrame(x = xfunc(dd_subject[Symbol(xval)]), y = yfunc(dd_subject[Symbol(yval)]))
                 end
                 scatter!(plt, summary_df, :x, :y;
                 label = string(["$(dd[1,grp]) " for grp in group_vars]...), extra_kwargs...)

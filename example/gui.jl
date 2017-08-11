@@ -1,8 +1,9 @@
 using PlugAndPlot
 using DataFrames
 using StatPlots
+gr()
 scatter(rand(100))
-savefig("/Users/pietro/Desktop/testjs.pdf")
+savefig("/Users/pietro/Desktop/testgr.pdf")
 using ClobberingReload
 using TextParse
 using CSV

@@ -26,7 +26,9 @@ mutable struct ComboBoxType
     chosen_value::String
     options::Vector{ComboBoxEntry}
     _options::ListModel
-    ComboBoxType(name, options) = new(name, options[1].value, options, ListModel(options))
+    ask_info::Bool
+    text_info::String
+    ComboBoxType(name, options, ask_info) = new(name, options[1].value, options, ListModel(options), ask_info, "")
 end
 
 mutable struct SpinBoxEntry{T<:Real}
