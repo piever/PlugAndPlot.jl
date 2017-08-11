@@ -35,7 +35,7 @@ ApplicationWindow {
                 }
                 Button {
                     text : "SAVE";
-                    onClicked : saveDialog.visible = true
+                    onClicked : saveDialog.open()
                 }
             }
         }
@@ -44,7 +44,6 @@ ApplicationWindow {
             Repeater {
                 model: _selectlist
                 Column {
-                    //Text { text: name }
                     Button {
                         text : name;
                         checked : false;
@@ -67,12 +66,8 @@ ApplicationWindow {
             Repeater {
                 model: _selectvalues
                 Column {
-                    //Text { text: name }
                     Text {
                         text : name;
-                        //checked : false;
-                        //checkable : true;
-                        //onClicked: { split = checked;}
                     }
                     Repeater {
                         model: _values
