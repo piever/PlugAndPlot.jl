@@ -67,5 +67,10 @@ function my_function(d::JuliaDisplay, width, height)
     gr(grid = false, size=(Int64(round(width)),Int64(round(height))))
     plt = get_plot(shared)
     display(d, plt)
-    return
+    return plt
+end
+
+function my_function(d::JuliaDisplay, width, height, savename::AbstractString)
+    plt = my_function(d::JuliaDisplay, width, height)
+    savefig(plt, savename)
 end

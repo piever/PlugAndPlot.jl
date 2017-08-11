@@ -5,7 +5,7 @@ import QtQuick.Dialogs 1.0
 import org.julialang 1.0
 
 ApplicationWindow {
-    title: "Plug And Plot"
+    title: "Save Your Plot"
     width: 620
     height: 420
     visible: true
@@ -15,7 +15,7 @@ ApplicationWindow {
         title: "Please choose a file"
         folder: shortcuts.home
         selectMultiple: false
-        nameFilters: [ "Csv files (*.csv)", "All files (*)" ]
+        selectExisting: false
         onAccepted: {
             console.log("You chose: " + fileDialog.fileUrl)
             choose.value = fileDialog.fileUrl
@@ -28,3 +28,8 @@ ApplicationWindow {
         Component.onCompleted: visible = true
     }
 }
+
+
+
+
+filename = QtGui.QFileDialog.getSaveFileName(self, "Save file", "", ".conf")

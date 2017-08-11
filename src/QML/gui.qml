@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.0
+import QtQuick.Dialogs 1.0
 import org.julialang 1.0
 
 ApplicationWindow {
@@ -27,9 +28,15 @@ ApplicationWindow {
                     }
                 }
             }
-            Button {
-                text : "PLOT";
-                onClicked : Julia.my_function(jdisp, jdisp.width, jdisp.height)
+            Column{
+                Button {
+                    text : "PLOT";
+                    onClicked : Julia.my_function(jdisp, jdisp.width, jdisp.height)
+                }
+                Button {
+                    text : "SAVE";
+                    onClicked : saveDialog.visible = true
+                }
             }
         }
         Row {
@@ -87,6 +94,22 @@ ApplicationWindow {
             placeholderText: "insert keywords here"
             width: 800
             onEditingFinished : {choose.value = text}
+        }
+    }
+    FileDialog {
+        id: saveDialog
+        title: "Please choose a file"
+        folder: shortcuts.home
+        selectMultiple: false
+        selectExisting: false
+        onAccepted: {
+            console.log("You chose: " + saveDialog.fileUrl)
+            Julia.my_function(jdisp, jdisp.width, jdisp.height, saveDialog.fileUrl)
+            close()
+        }
+        onRejected: {
+            console.log("Canceled")
+            close()
         }
     }
 
