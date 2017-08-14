@@ -4,8 +4,9 @@ mutable struct Shared
     selectlist::Vector{Column}
     plotvalues::Vector{ComboBoxType}
     plotkwargs::TextBoxEntry
+    smoother::SliderEntry
 end
-shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[], TextBoxEntry(""))
+shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[], TextBoxEntry(""), SliderEntry(0.0))
 
 """
     build_window(; kwargs...)
@@ -49,6 +50,7 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     shared.plotvalues = get_plotvalues(shared.df)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
     @qmlset qmlcontext().choose = shared.plotkwargs
+    @qmlset qmlcontext().smoother = shared.smoother
     #@qmlfunction plotsin
     @qmlfunction my_function
     qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")

@@ -2,6 +2,10 @@ mutable struct TextBoxEntry
     value::String
 end
 
+mutable struct SliderEntry
+    value::Float64
+end
+
 mutable struct Value
   name::String
   accepted::Bool

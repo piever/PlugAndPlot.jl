@@ -3,7 +3,7 @@ function get_plotvalues(df)
     ylist = union([:hazard, :density, :cumulative],names(df))
     yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)), true)
     plot_type = ComboBoxType("PLOT TYPE",  ComboBoxEntry.(["bar", "path", "scatter"]), false)
-    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["auto", "discrete", "continuous"]), false)
+    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["continuous", "discrete"]), false)
     errorlist = union([:none], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
     analysis_type = ComboBoxType("ANALYSIS TYPE",  ComboBoxEntry.(["Population", "Individual"]), false)
@@ -39,12 +39,20 @@ function get_plot(shared)
     yfunc = get_func(y_info, Symbol(yval))
 
     if analysis_type == "Population"
+        smooth_kwargs = []
+        if Symbol(axis_type) == :continuous
+            if Symbol(yval) == :density
+                bandwidth = shared.smoother.value*std(selectdata[Symbol(xval)])/100
+                smooth_kwargs = [(:bandwidth, bandwidth)]
+            end
+        end
         grp_error = groupapply(Symbol(yval),
             selectdata,
-            Symbol(xval),
+            Symbol(xval);
             group = group_vars,
             compute_error = convert_error_type(compute_error),
-            axis_type = Symbol(axis_type))
+            axis_type = Symbol(axis_type),
+            smooth_kwargs...)
         plt = plot(grp_error; line = Symbol(line),
             xlabel = xval, ylabel = yval, extra_kwargs...)
     else

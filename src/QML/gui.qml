@@ -34,6 +34,22 @@ ApplicationWindow {
                 }
             }
             Column{
+                Text{
+                    text: "Smoothing"
+                }
+                Slider {
+                    id: smoothing
+                    width: 100
+                    value: 1.
+                    minimumValue: 1.
+                    maximumValue: 100.
+                    onValueChanged: {
+                        Julia.my_function(jdisp, jdisp.width, jdisp.height);
+                        smoother.value = value
+                    }
+                }
+            }
+            Column{
                 Button {
                     text : "PLOT";
                     onClicked : Julia.my_function(jdisp, jdisp.width, jdisp.height)
@@ -77,8 +93,8 @@ ApplicationWindow {
                     Repeater {
                         model: _values
                         SpinBox {
-                            minimumValue: min_value
-                            maximumValue: max_value
+                            minimumValue: min_value;
+                            maximumValue: max_value;
                             value: selected_value;
                             onEditingFinished : {selected_value = value}
                         }
@@ -88,12 +104,15 @@ ApplicationWindow {
         }
         JuliaDisplay {
             id: jdisp
-            width: 800; height: 500
+            width: 600; height: 400
         }
         TextField{
             placeholderText: "insert keywords here"
-            width: 800
-            onEditingFinished : {choose.value = text}
+            width: 600
+            onEditingFinished : {
+                choose.value = text;
+                Julia.my_function(jdisp, jdisp.width, jdisp.height)
+            }
         }
     }
     FileDialog {
