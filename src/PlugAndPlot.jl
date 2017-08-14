@@ -1,6 +1,6 @@
 module PlugAndPlot
 
-using QML, StatPlots, DataFrames, TextParse
+using QML, StatPlots, DataFrames
 gr()
 
 export choose_data, build_window, get_plot, my_function

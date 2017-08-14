@@ -12,7 +12,7 @@ end
 function choose_data(a,d)
     index = broadcast(t -> true, 1:(size(a,1)))
     for key in keys(d)
-        index = combine(index, d[key],a[key])
+        index .= combine(index, d[key],a[key])
     end
     return a[index,:]
 end

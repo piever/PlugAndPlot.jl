@@ -12,16 +12,31 @@ end
 
 get_kwargs(s) = s == "" ? [] : [(x.args[1], eval(x.args[2])) for x in parse("("*s*",)").args]
 
+function get_func(s, x)
+    if s == ""
+        return df -> mean(df[x])
+    else
+        expr = parse("("*s*",)")
+        func = eval(expr.args[1])
+        if length(expr.args) == 1
+            return df -> func(df[x])
+        else
+            sel_var = eval(expr.args[2])
+            sel_value = eval(expr.args[3])
+            return df -> func(df[df[sel_var] .== sel_value, x])
+        end
+    end
+end
+
 function get_plot(shared)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
     xval, yval, line, axis_type, compute_error, analysis_type = getfield.(plotvalues, :chosen_value)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
-    plt = plot()
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
-    xfunc = x_info == "" ? mean : eval(parse(x_info))
-    yfunc = y_info == "" ? mean : eval(parse(y_info))
+    xfunc = get_func(x_info, Symbol(xval))
+    yfunc = get_func(y_info, Symbol(yval))
 
     if analysis_type == "Population"
         grp_error = groupapply(Symbol(yval),
@@ -34,7 +49,7 @@ function get_plot(shared)
             xlabel = xval, ylabel = yval, extra_kwargs...)
     else
         summary_df = by(selectdata, vcat(group_vars, convert_error_type(compute_error)[2])) do dd_subject
-            DataFrame(x = xfunc(dd_subject[Symbol(xval)]), y = yfunc(dd_subject[Symbol(yval)]))
+            DataFrame(x = xfunc(dd_subject), y = yfunc(dd_subject))
         end
         group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...) for i in 1:size(summary_df,1)]
         plt = scatter(summary_df, :x, :y; group = group_col, extra_kwargs...)
