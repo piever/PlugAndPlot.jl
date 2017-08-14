@@ -41,7 +41,7 @@ function get_plot(shared)
     if analysis_type == "Population"
         smooth_kwargs = []
         if Symbol(axis_type) == :continuous
-            if Symbol(yval) == :density
+            if Symbol(yval) in [:density, :hazard]
                 bandwidth = (shared.smoother.value+1.0)*std(selectdata[Symbol(xval)])/200
                 smooth_kwargs = [(:bandwidth, bandwidth)]
             end
