@@ -40,12 +40,13 @@ ApplicationWindow {
                 Slider {
                     id: smoothing
                     width: 100
-                    value: 1.
-                    minimumValue: 1.
+                    //value: 1.
+                    updateValueWhileDragging: false
+                    minimumValue: 0.
                     maximumValue: 100.
                     onValueChanged: {
-                        Julia.my_function(jdisp, jdisp.width, jdisp.height);
-                        smoother.value = value
+                        smoother.value = value;
+                        Julia.my_function(jdisp, jdisp.width, jdisp.height)
                     }
                 }
             }

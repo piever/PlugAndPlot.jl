@@ -42,8 +42,12 @@ function get_plot(shared)
         smooth_kwargs = []
         if Symbol(axis_type) == :continuous
             if Symbol(yval) == :density
-                bandwidth = shared.smoother.value*std(selectdata[Symbol(xval)])/100
+                bandwidth = (shared.smoother.value+1.0)*std(selectdata[Symbol(xval)])/200
                 smooth_kwargs = [(:bandwidth, bandwidth)]
+            end
+            if haskey(selectdata, Symbol(yval))
+                span = shared.smoother.value/100
+                smooth_kwargs = [(:span, span)]
             end
         end
         grp_error = groupapply(Symbol(yval),
