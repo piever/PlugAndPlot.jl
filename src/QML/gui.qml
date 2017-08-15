@@ -46,14 +46,18 @@ ApplicationWindow {
                     maximumValue: 100.
                     onValueChanged: {
                         smoother.value = value;
-                        Julia.my_function(jdisp, jdisp.width, jdisp.height)
+                        Julia.do_plot(jdisp, jdisp.width, jdisp.height)
                     }
                 }
             }
             Column{
                 Button {
                     text : "PLOT";
-                    onClicked : Julia.my_function(jdisp, jdisp.width, jdisp.height)
+                    onClicked : Julia.do_plot(jdisp, jdisp.width, jdisp.height)
+                }
+                Button {
+                    text : "PLOT";
+                    onClicked : Julia.do_plot(jdisp, jdisp.width, jdisp.height)
                 }
                 Button {
                     text : "SAVE";
@@ -112,7 +116,7 @@ ApplicationWindow {
             width: 600
             onEditingFinished : {
                 choose.value = text;
-                Julia.my_function(jdisp, jdisp.width, jdisp.height)
+                Julia.do_plot(jdisp, jdisp.width, jdisp.height)
             }
         }
     }
@@ -124,7 +128,7 @@ ApplicationWindow {
         selectExisting: false
         onAccepted: {
             console.log("You chose: " + saveDialog.fileUrl)
-            Julia.my_function(jdisp, jdisp.width, jdisp.height, saveDialog.fileUrl)
+            Julia.do_plot(jdisp, jdisp.width, jdisp.height, saveDialog.fileUrl)
             close()
         }
         onRejected: {

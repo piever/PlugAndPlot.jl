@@ -54,8 +54,7 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
     @qmlset qmlcontext().choose = shared.plotkwargs
     @qmlset qmlcontext().smoother = shared.smoother
-    #@qmlfunction plotsin
-    @qmlfunction my_function
+    qmlfunction("do_plot", PlugAndPlot.my_function)
     qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")
     QML.load(qml_engine,qml_file)
 
