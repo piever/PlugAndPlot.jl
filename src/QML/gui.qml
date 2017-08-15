@@ -8,10 +8,6 @@ ApplicationWindow {
   title: "Analysis GUI"
   width: 1000; height: 800
   visible: true
-  Item {
-    id: res
-    property double result: 0.0
-  }
   Column{
     Row{
       Repeater {
@@ -57,7 +53,7 @@ ApplicationWindow {
         }
         Button {
           text : "PLOT!";
-          onClicked : Julia.do_plot_inplace(jdisp, jdisp.width, jdisp.height)
+          onClicked : Julia.do_plot(jdisp, jdisp.width, jdisp.height, true)
         }
         Button {
           text : "SAVE";

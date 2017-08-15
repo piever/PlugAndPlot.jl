@@ -56,7 +56,6 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext().choose = shared.plotkwargs
     @qmlset qmlcontext().smoother = shared.smoother
     qmlfunction("do_plot", PlugAndPlot.do_plot)
-    qmlfunction("do_plot_inplace", PlugAndPlot.do_plot!)
     qmlfunction("save_plot", PlugAndPlot.save_plot)
     qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")
     QML.load(qml_engine,qml_file)
@@ -66,14 +65,9 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
 end
 
 
-function do_plot(d::JuliaDisplay, width, height)
-    shared.plt = plot()
-    do_plot!(d, width, height)
-end
-
-function do_plot!(d::JuliaDisplay, width, height)
+function do_plot(d::JuliaDisplay, width, height, in_place = false)
     gr(grid = false, size=(Int64(round(width)),Int64(round(height))))
-    get_plot!(shared)
+    get_plot!(shared, in_place)
     display(d, shared.plt)
 end
 
