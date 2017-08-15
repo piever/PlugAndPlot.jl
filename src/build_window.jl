@@ -25,7 +25,7 @@ end
 """
     build_window(datafile::AbstractString; kwargs...)
 
-Reads a csv file and starts build_window on the corresponding DataFrame
+Reads a csv file and starts `build_window` on the corresponding DataFrame
 """
 function build_window(datafile::AbstractString; kwargs...)
     cols, name_cols = csvread(datafile; header_exists = true)

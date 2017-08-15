@@ -3,8 +3,11 @@ using Documenter, PlugAndPlot
 makedocs(
     format = :html,
     sitename = "PlugAndPlot",
+    authors = "Pietro Vertechi",
     pages = [
-        "Home" => "index.md",
+        "Introduction" => "index.md",
+        "Getting Started" => "getting_started.md",
+        "Internals" => "internals.md",
     ]
 )
 
