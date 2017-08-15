@@ -4,7 +4,7 @@ function get_plotvalues(df)
     yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)), true)
     plot_type = ComboBoxType("PLOT TYPE",
         ComboBoxEntry.(["bar", "path", "scatter", "line", "boxplot", "violin", "marginalhist"]), false)
-    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["continuous", "discrete"]), false)
+    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["continuous", "binned", "discrete"]), false)
     errorlist = union([:none], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
     analysis_type = ComboBoxType("ANALYSIS TYPE",  ComboBoxEntry.(["Population", "Individual"]), false)
@@ -33,6 +33,7 @@ function get_plot!(shared, in_place)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
     xval, yval, line, axis_type, compute_error, analysis_type = getfield.(plotvalues, :chosen_value)
+    x_name = Symbol(xval)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
@@ -50,36 +51,47 @@ function get_plot!(shared, in_place)
                 span = (shared.smoother.value+1.0)/100
                 smooth_kwargs = [(:span, span)]
             end
+        elseif Symbol(axis_type) == :binned
+            nbins = round(Int64, 101-shared.smoother.value)
+            edges = linspace(Plots.ignorenan_minimum(selectdata[Symbol(xval)]),
+                Plots.ignorenan_maximum(selectdata[Symbol(xval)]), nbins+1)
+            middles = (edges[2:end] .+ edges[1:end-1])./2
+            indices = [searchsortedfirst(edges[2:end], ss) for ss in selectdata[Symbol(xval)]]
+            x_name = StatPlots.new_symbol(Symbol(xval, :_binned), selectdata)
+            selectdata[x_name] = middles[indices]
+            axis_type = "discrete"
         end
         grp_error = groupapply(Symbol(yval),
             selectdata,
-            Symbol(xval);
+            x_name;
             group = group_vars,
             compute_error = convert_error_type(compute_error),
             axis_type = Symbol(axis_type),
             smooth_kwargs...)
         if in_place
             plot!(shared.plt, grp_error; line = Symbol(line),
-                xlabel = xval, ylabel = yval, extra_kwargs...)
+                xlabel = x_name, ylabel = yval, extra_kwargs...)
         else
             shared.plt = plot(grp_error; line = Symbol(line),
-                xlabel = xval, ylabel = yval, extra_kwargs...)
+                xlabel = x_name, ylabel = yval, extra_kwargs...)
         end
     else
+        x_name = StatPlots.new_symbol(:x, selectdata)
+        y_name = StatPlots.new_symbol(:y, selectdata)
         error_type = convert_error_type(compute_error)
         if typeof(error_type) <: Tuple
             summary_df = by(selectdata, vcat(group_vars, error_type[2])) do dd_subject
-                DataFrame(x = xfunc(dd_subject), y = yfunc(dd_subject))
+                DataFrame(;[(x_name, xfunc(dd_subject)), (y_name, yfunc(dd_subject))]...)
             end
         else
             summary_df = copy(selectdata)
-            rename!(summary_df, [Symbol(xval), Symbol(yval)], [:x, :y])
+            rename!(summary_df, [Symbol(xval), Symbol(yval)], [x_name, y_name])
         end
         group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...) for i in 1:size(summary_df,1)]
         if in_place
-            plot!(shared.plt, summary_df, :x, :y; group = group_col, seriestype = Symbol(line), extra_kwargs...)
+            plot!(shared.plt, summary_df, x_name, y_name; group = group_col, seriestype = Symbol(line), extra_kwargs...)
         else
-            shared.plt = plot(summary_df, :x, :y; group = group_col, seriestype = Symbol(line), extra_kwargs...)
+            shared.plt = plot(summary_df, x_name, y_name; group = group_col, seriestype = Symbol(line), extra_kwargs...)
         end
     end
 end

@@ -11,6 +11,7 @@ ApplicationWindow {
   Column{
     Row{
       Repeater {
+        id: plotvalues
         model: _plotvalues
         Column {
           Text {text : name}
