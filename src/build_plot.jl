@@ -2,7 +2,8 @@ function get_plotvalues(df)
     xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))), true)
     ylist = union([:hazard, :density, :cumulative],names(df))
     yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)), true)
-    plot_type = ComboBoxType("PLOT TYPE",  ComboBoxEntry.(["bar", "path", "scatter"]), false)
+    plot_type = ComboBoxType("PLOT TYPE",
+        ComboBoxEntry.(["bar", "path", "scatter", "line", "boxplot", "violin", "marginalhist"]), false)
     axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["continuous", "discrete"]), false)
     errorlist = union([:none], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
@@ -60,11 +61,17 @@ function get_plot(shared)
         plt = plot(grp_error; line = Symbol(line),
             xlabel = xval, ylabel = yval, extra_kwargs...)
     else
-        summary_df = by(selectdata, vcat(group_vars, convert_error_type(compute_error)[2])) do dd_subject
-            DataFrame(x = xfunc(dd_subject), y = yfunc(dd_subject))
+        error_type = convert_error_type(compute_error)
+        if typeof(error_type) <: Tuple
+            summary_df = by(selectdata, vcat(group_vars, error_type[2])) do dd_subject
+                DataFrame(x = xfunc(dd_subject), y = yfunc(dd_subject))
+            end
+        else
+            summary_df = copy(selectdata)
+            rename!(summary_df, [Symbol(xval), Symbol(yval)], [:x, :y])
         end
         group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...) for i in 1:size(summary_df,1)]
-        plt = scatter(summary_df, :x, :y; group = group_col, extra_kwargs...)
+        plt = plot(summary_df, :x, :y; group = group_col, seriestype = Symbol(line), extra_kwargs...)
     end
     return plt
 end
