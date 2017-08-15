@@ -43,7 +43,7 @@ ApplicationWindow {
                     //value: 1.
                     updateValueWhileDragging: false
                     minimumValue: 0.
-                    maximumValue: 100.
+                    maximumValue: 99.
                     onValueChanged: {
                         smoother.value = value;
                         Julia.do_plot(jdisp, jdisp.width, jdisp.height)
@@ -56,8 +56,8 @@ ApplicationWindow {
                     onClicked : Julia.do_plot(jdisp, jdisp.width, jdisp.height)
                 }
                 Button {
-                    text : "PLOT";
-                    onClicked : Julia.do_plot(jdisp, jdisp.width, jdisp.height)
+                    text : "PLOT!";
+                    onClicked : Julia.do_plot_inplace(jdisp, jdisp.width, jdisp.height)
                 }
                 Button {
                     text : "SAVE";
@@ -128,7 +128,7 @@ ApplicationWindow {
         selectExisting: false
         onAccepted: {
             console.log("You chose: " + saveDialog.fileUrl)
-            Julia.do_plot(jdisp, jdisp.width, jdisp.height, saveDialog.fileUrl)
+            Julia.save_plot(saveDialog.fileUrl)
             close()
         }
         onRejected: {

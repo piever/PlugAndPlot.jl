@@ -5,8 +5,9 @@ mutable struct Shared
     plotvalues::Vector{ComboBoxType}
     plotkwargs::TextBoxEntry
     smoother::SliderEntry
+    plt::Plots.Plot{Plots.GRBackend}
 end
-shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[], TextBoxEntry(""), SliderEntry(0.0))
+shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[], TextBoxEntry(""), SliderEntry(0.0), plot())
 
 """
     build_window(; kwargs...)
@@ -54,7 +55,9 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
     @qmlset qmlcontext().choose = shared.plotkwargs
     @qmlset qmlcontext().smoother = shared.smoother
-    qmlfunction("do_plot", PlugAndPlot.my_function)
+    qmlfunction("do_plot", PlugAndPlot.do_plot)
+    qmlfunction("do_plot_inplace", PlugAndPlot.do_plot!)
+    qmlfunction("save_plot", PlugAndPlot.save_plot)
     qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")
     QML.load(qml_engine,qml_file)
 
@@ -63,14 +66,15 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
 end
 
 
-function my_function(d::JuliaDisplay, width, height)
-    gr(grid = false, size=(Int64(round(width)),Int64(round(height))))
-    plt = get_plot(shared)
-    display(d, plt)
-    return plt
+function do_plot(d::JuliaDisplay, width, height)
+    shared.plt = plot()
+    do_plot!(d, width, height)
 end
 
-function my_function(d::JuliaDisplay, width, height, savename::AbstractString)
-    plt = my_function(d::JuliaDisplay, width, height)
-    savefig(plt, savename)
+function do_plot!(d::JuliaDisplay, width, height)
+    gr(grid = false, size=(Int64(round(width)),Int64(round(height))))
+    get_plot!(shared)
+    display(d, shared.plt)
 end
+
+save_plot(savename::AbstractString) =  savefig(shared.plt, savename)

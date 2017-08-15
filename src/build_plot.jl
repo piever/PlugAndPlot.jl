@@ -29,7 +29,7 @@ function get_func(s, x)
     end
 end
 
-function get_plot(shared)
+function get_plot!(shared)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
     xval, yval, line, axis_type, compute_error, analysis_type = getfield.(plotvalues, :chosen_value)
@@ -47,7 +47,7 @@ function get_plot(shared)
                 smooth_kwargs = [(:bandwidth, bandwidth)]
             end
             if haskey(selectdata, Symbol(yval))
-                span = shared.smoother.value/100
+                span = (shared.smoother.value+1.0)/100
                 smooth_kwargs = [(:span, span)]
             end
         end
@@ -58,7 +58,7 @@ function get_plot(shared)
             compute_error = convert_error_type(compute_error),
             axis_type = Symbol(axis_type),
             smooth_kwargs...)
-        plt = plot(grp_error; line = Symbol(line),
+        plot!(shared.plt, grp_error; line = Symbol(line),
             xlabel = xval, ylabel = yval, extra_kwargs...)
     else
         error_type = convert_error_type(compute_error)
@@ -71,9 +71,8 @@ function get_plot(shared)
             rename!(summary_df, [Symbol(xval), Symbol(yval)], [:x, :y])
         end
         group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...) for i in 1:size(summary_df,1)]
-        plt = plot(summary_df, :x, :y; group = group_col, seriestype = Symbol(line), extra_kwargs...)
+        plot!(shared.plt, summary_df, :x, :y; group = group_col, seriestype = Symbol(line), extra_kwargs...)
     end
-    return plt
 end
 
 

@@ -6,3 +6,9 @@
 Goal: build a GUI to create statistical plots from a DataFrame, using DataFrames, QML and StatPlots.
 
 The qml code is largely inspired to the examples of the excellent [QML.jl](https://github.com/barche/QML.jl) package.
+
+## Example usage
+
+This is what it looks like:
+
+![](https://user-images.githubusercontent.com/6333339/29314520-37bf1a82-81b6-11e7-8b22-d2eb9c3c70c5.png)
