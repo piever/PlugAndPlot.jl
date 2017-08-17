@@ -15,15 +15,18 @@ ApplicationWindow {
         model: _plotvalues
         property bool show_till_end: true
         property bool show_smoothing: true
+        property bool show_dataperpoint: false
         Column {
-          visible: plotvalues.show_till_end || (index <= 2)
+          visible: (plotvalues.show_till_end || (index <= 2)) &&
+            (plotvalues.show_dataperpoint || !(index == 5)) &&
+            (!plotvalues.show_dataperpoint || !(index == 4))
           Text {text : name}
           ComboBox {
             textRole: "value"
             model: _options
             onCurrentIndexChanged: {
               if (currentText != "") chosen_value = currentText
-              if ((index == 2) && (currentIndex > 2)) {
+              if ((index == 2) && (currentIndex > 3)) {
                 plotvalues.show_till_end = false
               }
               else if (index == 2) {
@@ -32,6 +35,7 @@ ApplicationWindow {
               if (index == 3) {
                 plotvalues.show_smoothing = (chosen_value == "continuous") ||
                                             (chosen_value == "binned")
+                plotvalues.show_dataperpoint = (chosen_value == "pointbypoint")
               }
             }
           }

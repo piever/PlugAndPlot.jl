@@ -5,17 +5,20 @@ function get_plotvalues(df)
     plotlist = [
         "bar",
         "path",
+        "line",
         "scatter",
         "boxplot",
         "violin",
         "marginalhist"
     ]
     plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
-    axislist = ["continuous", "binned", "discrete", "individual"]
+    axislist = ["continuous", "binned", "discrete", "pointbypoint"]
     axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
-    errorlist = union([:none], "across " .* string.(names(df)))
+    errorlist = union(["none"], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
-    return [xvalues, yvalues, plot_type, axis_type, compute_error]
+    namelist = union(["pointbypoint"], "point=" .* string.(names(df)))
+    dataperpoint = ComboBoxType("DATA PER POINT",  ComboBoxEntry.(namelist), false)
+    return [xvalues, yvalues, plot_type, axis_type, compute_error, dataperpoint]
 end
 
 get_kwargs(s) = s == "" ? [] : [(x.args[1], eval(x.args[2])) for x in parse("("*s*",)").args]
@@ -39,14 +42,15 @@ end
 function get_plot!(shared, in_place)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
-    xval, yval, line, axis_type, compute_error = getfield.(plotvalues, :chosen_value)
+    xval, yval, line, axis_type, compute_error, dataperpoint =
+        getfield.(plotvalues, :chosen_value)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
     xfunc = get_func(x_info, Symbol(xval))
     yfunc = get_func(y_info, Symbol(yval))
-    isgroupapply = (Symbol(line) in [:bar, :path, :scatter]) &&
-        !(Symbol(axis_type) == :individual)
+    isrecipe = !(Symbol(line) in [:bar, :path, :scatter, :line])
+    isgroupapply = !isrecipe && !(Symbol(axis_type) == :pointbypoint)
 
     if isgroupapply
         smooth_kwargs = []
@@ -70,24 +74,25 @@ function get_plot!(shared, in_place)
             compute_error = convert_error_type(compute_error),
             axis_type = Symbol(axis_type),
             smooth_kwargs...)
+        linestyle = (line == "line") ? :path : Symbol(line)
         if in_place
-            plot!(shared.plt, grp_error; line = Symbol(line),
+            plot!(shared.plt, grp_error; line = linestyle,
                 xlabel = xval, ylabel = yval, extra_kwargs...)
         else
-            shared.plt = plot(grp_error; line = Symbol(line),
+            shared.plt = plot(grp_error; line = linestyle,
                 xlabel = xval, ylabel = yval, extra_kwargs...)
         end
     else
         x_name = StatPlots.new_symbol(:x, selectdata)
         y_name = StatPlots.new_symbol(:y, selectdata)
-        error_type = convert_error_type(compute_error)
-        if typeof(error_type) <: Tuple
-            summary_df = by(selectdata, vcat(group_vars, error_type[2])) do dd_subject
-                DataFrame(;[(x_name, xfunc(dd_subject)), (y_name, yfunc(dd_subject))]...)
-            end
-        else
+        if isrecipe || !('=' in dataperpoint)
             summary_df = copy(selectdata)
             rename!(summary_df, [Symbol(xval), Symbol(yval)], [x_name, y_name])
+        else
+            datalabel = Symbol(split(dataperpoint, '=')[2])
+            summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
+                DataFrame(;[(x_name, xfunc(dd_subject)), (y_name, yfunc(dd_subject))]...)
+            end
         end
         group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...)
             for i in 1:size(summary_df,1)]
