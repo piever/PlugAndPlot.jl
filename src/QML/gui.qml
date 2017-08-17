@@ -29,7 +29,7 @@ ApplicationWindow {
               else if (index == 2) {
                 plotvalues.show_till_end = true
               }
-              if (index == 4) {
+              if (index == 3) {
                 plotvalues.show_smoothing = (chosen_value == "continuous") ||
                                             (chosen_value == "binned")
               }

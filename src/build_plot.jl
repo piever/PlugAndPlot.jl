@@ -11,11 +11,11 @@ function get_plotvalues(df)
         "marginalhist"
     ]
     plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
-    errorlist = union([:none], "across " .* string.(names(df)))
-    compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
     axislist = ["continuous", "binned", "discrete", "individual"]
     axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
-    return [xvalues, yvalues, plot_type, compute_error, axis_type]
+    errorlist = union([:none], "across " .* string.(names(df)))
+    compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
+    return [xvalues, yvalues, plot_type, axis_type, compute_error]
 end
 
 get_kwargs(s) = s == "" ? [] : [(x.args[1], eval(x.args[2])) for x in parse("("*s*",)").args]
@@ -39,7 +39,7 @@ end
 function get_plot!(shared, in_place)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
-    xval, yval, line, compute_error, axis_type  = getfield.(plotvalues, :chosen_value)
+    xval, yval, line, axis_type, compute_error = getfield.(plotvalues, :chosen_value)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
