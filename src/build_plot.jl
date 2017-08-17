@@ -53,13 +53,7 @@ function get_plot!(shared, in_place)
             end
         elseif Symbol(axis_type) == :binned
             nbins = round(Int64, 101-shared.smoother.value)
-            edges = linspace(Plots.ignorenan_minimum(selectdata[Symbol(xval)]),
-                Plots.ignorenan_maximum(selectdata[Symbol(xval)]), nbins+1)
-            middles = (edges[2:end] .+ edges[1:end-1])./2
-            indices = [searchsortedfirst(edges[2:end], ss) for ss in selectdata[Symbol(xval)]]
-            x_name = StatPlots.new_symbol(Symbol(xval, :_binned), selectdata)
-            selectdata[x_name] = middles[indices]
-            axis_type = "discrete"
+            smooth_kwargs = [(:nbins, nbins)]
         end
         grp_error = groupapply(Symbol(yval),
             selectdata,
