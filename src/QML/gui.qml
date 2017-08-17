@@ -13,14 +13,26 @@ ApplicationWindow {
       Repeater {
         id: plotvalues
         model: _plotvalues
+        property bool show_till_end: true
+        property bool show_smoothing: true
         Column {
+          visible: plotvalues.show_till_end || (index <= 2)
           Text {text : name}
           ComboBox {
             textRole: "value"
             model: _options
             onCurrentIndexChanged: {
-              if (currentText != "")
-              chosen_value = currentText
+              if (currentText != "") chosen_value = currentText
+              if ((index == 2) && (currentIndex > 2)) {
+                plotvalues.show_till_end = false
+              }
+              else if (index == 2) {
+                plotvalues.show_till_end = true
+              }
+              if (index == 4) {
+                plotvalues.show_smoothing = (chosen_value == "continuous") ||
+                                            (chosen_value == "binned")
+              }
             }
           }
           TextField{
@@ -31,6 +43,7 @@ ApplicationWindow {
         }
       }
       Column{
+        visible: plotvalues.show_till_end && plotvalues.show_smoothing
         Text{
           text: "Smoothing"
         }

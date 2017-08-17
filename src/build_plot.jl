@@ -6,19 +6,16 @@ function get_plotvalues(df)
         "bar",
         "path",
         "scatter",
-        "line",
         "boxplot",
         "violin",
         "marginalhist"
     ]
     plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
-    axislist = ["continuous", "binned", "discrete"]
-    axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
     errorlist = union([:none], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
-    analysis_type = ComboBoxType("ANALYSIS TYPE",
-        ComboBoxEntry.(["Population", "Individual"]), false)
-    return [xvalues, yvalues, plot_type, axis_type, compute_error, analysis_type]
+    axislist = ["continuous", "binned", "discrete", "individual"]
+    axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
+    return [xvalues, yvalues, plot_type, compute_error, axis_type]
 end
 
 get_kwargs(s) = s == "" ? [] : [(x.args[1], eval(x.args[2])) for x in parse("("*s*",)").args]
@@ -42,16 +39,16 @@ end
 function get_plot!(shared, in_place)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
-    xval, yval, line, axis_type, compute_error, analysis_type =
-        getfield.(plotvalues, :chosen_value)
-    x_name = Symbol(xval)
+    xval, yval, line, compute_error, axis_type  = getfield.(plotvalues, :chosen_value)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
     xfunc = get_func(x_info, Symbol(xval))
     yfunc = get_func(y_info, Symbol(yval))
+    isgroupapply = (Symbol(line) in [:bar, :path, :scatter]) &&
+        !(Symbol(axis_type) == :individual)
 
-    if analysis_type == "Population"
+    if isgroupapply
         smooth_kwargs = []
         if Symbol(axis_type) == :continuous
             if Symbol(yval) in [:density, :hazard]
@@ -68,17 +65,17 @@ function get_plot!(shared, in_place)
         end
         grp_error = groupapply(Symbol(yval),
             selectdata,
-            x_name;
+            Symbol(xval);
             group = group_vars,
             compute_error = convert_error_type(compute_error),
             axis_type = Symbol(axis_type),
             smooth_kwargs...)
         if in_place
             plot!(shared.plt, grp_error; line = Symbol(line),
-                xlabel = x_name, ylabel = yval, extra_kwargs...)
+                xlabel = xval, ylabel = yval, extra_kwargs...)
         else
             shared.plt = plot(grp_error; line = Symbol(line),
-                xlabel = x_name, ylabel = yval, extra_kwargs...)
+                xlabel = xval, ylabel = yval, extra_kwargs...)
         end
     else
         x_name = StatPlots.new_symbol(:x, selectdata)
@@ -96,10 +93,10 @@ function get_plot!(shared, in_place)
             for i in 1:size(summary_df,1)]
         if in_place
             plot!(shared.plt, summary_df, x_name, y_name; group = group_col,
-                seriestype = Symbol(line), extra_kwargs...)
+                seriestype = Symbol(line), xlabel = xval, ylabel = yval, extra_kwargs...)
         else
             shared.plt = plot(summary_df, x_name, y_name; group = group_col,
-                seriestype = Symbol(line), extra_kwargs...)
+                seriestype = Symbol(line), xlabel = xval, ylabel = yval, extra_kwargs...)
         end
     end
 end
