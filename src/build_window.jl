@@ -7,7 +7,8 @@ mutable struct Shared
     smoother::SliderEntry
     plt::Plots.Plot{Plots.GRBackend}
 end
-shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[], TextBoxEntry(""), SliderEntry(0.0), plot())
+shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[],
+    TextBoxEntry(""), SliderEntry(0.0), plot())
 
 """
     build_window(; kwargs...)

@@ -4,7 +4,8 @@ function choose_data(shared)
         d[Symbol(s.name)] = [value.name for value in s.values if value.accepted]
     end
     for s in shared.selectvalues
-        d[Symbol(s.name)] = (t -> (s.values[1].selected_value <= t <= s.values[2].selected_value))
+        d[Symbol(s.name)] =
+            (t -> (s.values[1].selected_value <= t <= s.values[2].selected_value))
     end
     choose_data(shared.df, d)
 end

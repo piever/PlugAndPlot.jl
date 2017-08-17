@@ -1,13 +1,23 @@
 function get_plotvalues(df)
     xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))), true)
-    ylist = union([:hazard, :density, :cumulative],names(df))
-    yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(string.(ylist)), true)
-    plot_type = ComboBoxType("PLOT TYPE",
-        ComboBoxEntry.(["bar", "path", "scatter", "line", "boxplot", "violin", "marginalhist"]), false)
-    axis_type = ComboBoxType("AXIS TYPE",  ComboBoxEntry.(["continuous", "binned", "discrete"]), false)
+    ylist = string.(union([:hazard, :density, :cumulative],names(df)))
+    yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(ylist), true)
+    plotlist = [
+        "bar",
+        "path",
+        "scatter",
+        "line",
+        "boxplot",
+        "violin",
+        "marginalhist"
+    ]
+    plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
+    axislist = ["continuous", "binned", "discrete"]
+    axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
     errorlist = union([:none], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
-    analysis_type = ComboBoxType("ANALYSIS TYPE",  ComboBoxEntry.(["Population", "Individual"]), false)
+    analysis_type = ComboBoxType("ANALYSIS TYPE",
+        ComboBoxEntry.(["Population", "Individual"]), false)
     return [xvalues, yvalues, plot_type, axis_type, compute_error, analysis_type]
 end
 
@@ -32,7 +42,8 @@ end
 function get_plot!(shared, in_place)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
     selectdata = choose_data(shared)
-    xval, yval, line, axis_type, compute_error, analysis_type = getfield.(plotvalues, :chosen_value)
+    xval, yval, line, axis_type, compute_error, analysis_type =
+        getfield.(plotvalues, :chosen_value)
     x_name = Symbol(xval)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
@@ -81,11 +92,14 @@ function get_plot!(shared, in_place)
             summary_df = copy(selectdata)
             rename!(summary_df, [Symbol(xval), Symbol(yval)], [x_name, y_name])
         end
-        group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...) for i in 1:size(summary_df,1)]
+        group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...)
+            for i in 1:size(summary_df,1)]
         if in_place
-            plot!(shared.plt, summary_df, x_name, y_name; group = group_col, seriestype = Symbol(line), extra_kwargs...)
+            plot!(shared.plt, summary_df, x_name, y_name; group = group_col,
+                seriestype = Symbol(line), extra_kwargs...)
         else
-            shared.plt = plot(summary_df, x_name, y_name; group = group_col, seriestype = Symbol(line), extra_kwargs...)
+            shared.plt = plot(summary_df, x_name, y_name; group = group_col,
+                seriestype = Symbol(line), extra_kwargs...)
         end
     end
 end
