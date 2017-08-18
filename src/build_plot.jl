@@ -87,7 +87,8 @@ function get_plot!(shared, in_place)
         y_name = StatPlots.new_symbol(:y, selectdata)
         if isrecipe || !('=' in dataperpoint)
             summary_df = copy(selectdata)
-            rename!(summary_df, [Symbol(xval), Symbol(yval)], [x_name, y_name])
+            summary_df[x_name] = summary_df[Symbol(xval)]
+            summary_df[y_name] = summary_df[Symbol(yval)]
         else
             datalabel = Symbol(split(dataperpoint, '=')[2])
             summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject

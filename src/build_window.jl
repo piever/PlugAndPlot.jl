@@ -56,8 +56,11 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
     @qmlset qmlcontext().choose = shared.plotkwargs
     @qmlset qmlcontext().smoother = shared.smoother
+    spitting_var = ComboBoxEntry.(["Don't split"; string.("splitby:",names(shared.df))])
+    @qmlset qmlcontext()._spitting_var = ComboBoxType("spitting_var", spitting_var, false)
     qmlfunction("do_plot", PlugAndPlot.do_plot)
     qmlfunction("save_plot", PlugAndPlot.save_plot)
+    qmlfunction("check_equality", PlugAndPlot.check_equality)
     qml_file = joinpath(Pkg.dir("PlugAndPlot","src"), "QML", "gui.qml")
     QML.load(qml_engine,qml_file)
 
@@ -73,3 +76,8 @@ function do_plot(d::JuliaDisplay, width, height, in_place = false)
 end
 
 save_plot(savename::AbstractString) =  savefig(shared.plt, savename)
+
+function check_equality()
+    (shared.plotvalues[1].chosen_value == shared.plotvalues[2].chosen_value) &&
+    (shared.plotvalues[1].text_info == shared.plotvalues[2].text_info)
+end

@@ -16,6 +16,7 @@ ApplicationWindow {
         property bool show_till_end: true
         property bool show_smoothing: true
         property bool show_dataperpoint: false
+        property bool x_equals_y: false
         Column {
           visible: (plotvalues.show_till_end || (index <= 2)) &&
             (plotvalues.show_dataperpoint || !(index == 5)) &&
@@ -26,23 +27,29 @@ ApplicationWindow {
             model: _options
             onCurrentIndexChanged: {
               if (currentText != "") chosen_value = currentText
-              if ((index == 2) && (currentIndex > 3)) {
-                plotvalues.show_till_end = false
-              }
-              else if (index == 2) {
-                plotvalues.show_till_end = true
-              }
+              if (index == 2) plotvalues.show_till_end = (currentIndex <= 3)
               if (index == 3) {
                 plotvalues.show_smoothing = (chosen_value == "continuous") ||
                                             (chosen_value == "binned")
                 plotvalues.show_dataperpoint = (chosen_value == "pointbypoint")
               }
+              plotvalues.x_equals_y = Julia.check_equality()
             }
           }
           TextField{
             placeholderText: "specify operation"
             visible: ask_info
-            onEditingFinished : {text_info = text}
+            onEditingFinished : {
+              text_info = text
+              plotvalues.x_equals_y = Julia.check_equality()
+            }
+          }
+          ComboBox{
+            model: _spitting_var._options
+            visible: (index == 2) && plotvalues.x_equals_y
+            onCurrentIndexChanged : {
+              _spitting_var.chosen_value = currentText
+            }
           }
         }
       }
@@ -80,7 +87,6 @@ ApplicationWindow {
       }
     }
     Row {
-
       Repeater {
         model: _selectlist
         Column {
