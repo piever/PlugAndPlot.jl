@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Installation",
     "category": "section",
-    "text": "The package is not yet registered in Julia's package registry, and so it must be installed typing the following command in the Julia REPL:Pkg.clone(\"https://github.com/piever/PlugAndPlot.jl.git\")This package may depend on recent features of StatPlots.jl. For all the features to work, it is recommended to be on the latest (unreleased) StatPlots version:Pkg.checkout(\"StatPlots\")"
+    "text": "The package is not yet registered in Julia's package registry, and so it must be installed typing the following command in the Julia REPL:Pkg.clone(\"https://github.com/piever/PlugAndPlot.jl.git\")"
 },
 
 {
