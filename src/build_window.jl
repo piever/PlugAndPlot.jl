@@ -5,10 +5,11 @@ mutable struct Shared
     plotvalues::Vector{ComboBoxType}
     plotkwargs::TextBoxEntry
     smoother::SliderEntry
+    splitting_var::ComboBoxType
     plt::Plots.Plot{Plots.GRBackend}
 end
 shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[],
-    TextBoxEntry(""), SliderEntry(0.0), plot())
+    TextBoxEntry(""), SliderEntry(0.0), ComboBoxType("", [""]), plot())
 
 """
     build_window(; kwargs...)
@@ -56,8 +57,9 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
     @qmlset qmlcontext().choose = shared.plotkwargs
     @qmlset qmlcontext().smoother = shared.smoother
-    spitting_var = ComboBoxEntry.(["Don't split"; string.("splitby:",names(shared.df))])
-    @qmlset qmlcontext()._spitting_var = ComboBoxType("spitting_var", spitting_var, false)
+    splitting_options = ["Don't split"; string.("splitby:",names(shared.df))]
+    shared.splitting_var = ComboBoxType("spitting_var", splitting_options)
+    @qmlset qmlcontext().splitting_var = shared.splitting_var
     qmlfunction("do_plot", PlugAndPlot.do_plot)
     qmlfunction("save_plot", PlugAndPlot.save_plot)
     qmlfunction("check_equality", PlugAndPlot.check_equality)

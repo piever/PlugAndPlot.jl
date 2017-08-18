@@ -35,6 +35,9 @@ mutable struct ComboBoxType
     ComboBoxType(name, options, ask_info) = new(name, options[1].value, options, ListModel(options), ask_info, "")
 end
 
+ComboBoxType(name, option_names::AbstractArray{T}, ask_info = false) where {T <: AbstractString} =
+    ComboBoxType(name, ComboBoxEntry.(option_names), ask_info)
+
 mutable struct SpinBoxEntry{T<:Real}
     selected_value::T
     min_value::T

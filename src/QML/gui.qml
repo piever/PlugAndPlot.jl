@@ -45,10 +45,10 @@ ApplicationWindow {
             }
           }
           ComboBox{
-            model: _spitting_var._options
+            model: splitting_var._options
             visible: (index == 2) && plotvalues.x_equals_y
             onCurrentIndexChanged : {
-              _spitting_var.chosen_value = currentText
+              splitting_var.chosen_value = currentText
             }
           }
         }
