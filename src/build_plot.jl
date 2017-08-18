@@ -23,21 +23,7 @@ end
 
 get_kwargs(s) = s == "" ? [] : [(x.args[1], eval(x.args[2])) for x in parse("("*s*",)").args]
 
-function get_func(s, x)
-    if s == ""
-        return df -> mean(df[x])
-    else
-        expr = parse("("*s*",)")
-        func = eval(expr.args[1])
-        if length(expr.args) == 1
-            return df -> func(df[x])
-        else
-            sel_var = eval(expr.args[2])
-            sel_value = eval(expr.args[3])
-            return df -> func(df[df[sel_var] .== sel_value, x])
-        end
-    end
-end
+get_func(s) = (s == "") ? mean : eval(parse(s))
 
 function get_plot!(shared, in_place)
     df, selectlist, plotvalues = shared.df, shared.selectlist, shared.plotvalues
@@ -47,8 +33,8 @@ function get_plot!(shared, in_place)
     group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
-    xfunc = get_func(x_info, Symbol(xval))
-    yfunc = get_func(y_info, Symbol(yval))
+    xfunc = get_func(x_info)
+    yfunc = get_func(y_info)
     isrecipe = !(Symbol(line) in [:bar, :path, :scatter, :line])
     isgroupapply = !isrecipe && !(Symbol(axis_type) == :pointbypoint)
 
@@ -66,7 +52,10 @@ function get_plot!(shared, in_place)
         elseif Symbol(axis_type) == :binned
             nbins = round(Int64, 101-shared.smoother.value)
             smooth_kwargs = [(:nbins, nbins)]
+        elseif (Symbol(axis_type) == :discrete) && haskey(selectdata, Symbol(yval))
+            smooth_kwargs = [(:estimator, yfunc)]
         end
+
         grp_error = groupapply(Symbol(yval),
             selectdata,
             Symbol(xval);
@@ -85,14 +74,26 @@ function get_plot!(shared, in_place)
     else
         x_name = StatPlots.new_symbol(:x, selectdata)
         y_name = StatPlots.new_symbol(:y, selectdata)
+        plot_diag = false
         if isrecipe || !('=' in dataperpoint)
             summary_df = copy(selectdata)
             summary_df[x_name] = summary_df[Symbol(xval)]
             summary_df[y_name] = summary_df[Symbol(yval)]
         else
             datalabel = Symbol(split(dataperpoint, '=')[2])
-            summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
-                DataFrame(;[(x_name, xfunc(dd_subject)), (y_name, yfunc(dd_subject))]...)
+            if check_equality() && (':' in shared.splitting_var.chosen_value)
+                plot_diag = true
+                splitting_var = Symbol(split(shared.splitting_var.chosen_value, ':')[2])
+                x_val, y_val = sort(union(selectdata[splitting_var]))
+                summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
+                    DataFrame(;[(x_name, xfunc(dd_subject[dd_subject[splitting_var] .== x_val, Symbol(xval)])),
+                        (y_name, yfunc(dd_subject[dd_subject[splitting_var] .== y_val, Symbol(xval)]))]...)
+                end
+            else
+                summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
+                    DataFrame(;[(x_name, xfunc(dd_subject[Symbol(xval)])),
+                        (y_name, yfunc(dd_subject[Symbol(xval)]))]...)
+                end
             end
         end
         group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...)
@@ -104,6 +105,7 @@ function get_plot!(shared, in_place)
             shared.plt = plot(summary_df, x_name, y_name; group = group_col,
                 seriestype = Symbol(line), xlabel = xval, ylabel = yval, extra_kwargs...)
         end
+        plot_diag && Plots.abline!(shared.plt, 1, 0, label = "identity")
     end
 end
 
