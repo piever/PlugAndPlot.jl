@@ -21,12 +21,6 @@ be installed typing the following command in the Julia REPL:
 Pkg.clone("https://github.com/piever/PlugAndPlot.jl.git")
 ```
 
-This package may depend on recent features of `StatPlots.jl`. For all the features to work, it is recommended to be on the latest (unreleased) StatPlots version:
-
-```julia
-Pkg.checkout("StatPlots")
-```
-
 ## Known issues
 
 - Pressing `Tab` can cause a segmentation fault. The issue is being investigate, but for the time being it is recommended to not press `Tab` while using `PlugAndPlot.jl`.

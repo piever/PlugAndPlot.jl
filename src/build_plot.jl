@@ -14,7 +14,7 @@ function get_plotvalues(df)
     plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
     axislist = ["continuous", "binned", "discrete", "pointbypoint"]
     axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
-    errorlist = union(["none"], "across " .* string.(names(df)))
+    errorlist = union(["none", "bootstrap", "across"], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
     namelist = union(["pointbypoint"], "point=" .* string.(names(df)))
     dataperpoint = ComboBoxType("DATA PER POINT",  ComboBoxEntry.(namelist), false)
