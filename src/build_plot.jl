@@ -37,7 +37,7 @@ function get_plot!(shared, in_place)
     yfunc = get_func(y_info)
     isrecipe = !(Symbol(line) in [:bar, :path, :scatter, :line])
     isgroupapply = !isrecipe && !(Symbol(axis_type) == :pointbypoint)
-
+    xlabel, ylabel = xval, yval
     if isgroupapply
         smooth_kwargs = []
         if Symbol(axis_type) == :continuous
@@ -86,13 +86,16 @@ function get_plot!(shared, in_place)
                 splitting_var = Symbol(split(shared.splitting_var.chosen_value, ':')[2])
                 x_val, y_val = sort(union(selectdata[splitting_var]))
                 summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
-                    DataFrame(;[(x_name, xfunc(dd_subject[dd_subject[splitting_var] .== x_val, Symbol(xval)])),
-                        (y_name, yfunc(dd_subject[dd_subject[splitting_var] .== y_val, Symbol(xval)]))]...)
+                    splitter = (dd_subject[splitting_var] .== x_val)
+                    DataFrame(;[(x_name, xfunc(dd_subject[splitter, Symbol(xval)])),
+                        (y_name, yfunc(dd_subject[.!splitter, Symbol(yval)]))]...)
                 end
+                xlabel = string("$xval with $splitting_var = $x_val")
+                ylabel = string("$yval with $splitting_var = $y_val")
             else
                 summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
                     DataFrame(;[(x_name, xfunc(dd_subject[Symbol(xval)])),
-                        (y_name, yfunc(dd_subject[Symbol(xval)]))]...)
+                        (y_name, yfunc(dd_subject[Symbol(yval)]))]...)
                 end
             end
         end
@@ -100,12 +103,12 @@ function get_plot!(shared, in_place)
             for i in 1:size(summary_df,1)]
         if in_place
             plot!(shared.plt, summary_df, x_name, y_name; group = group_col,
-                seriestype = Symbol(line), xlabel = xval, ylabel = yval, extra_kwargs...)
+                seriestype = Symbol(line), xlabel = xlabel, ylabel = ylabel, extra_kwargs...)
         else
             shared.plt = plot(summary_df, x_name, y_name; group = group_col,
-                seriestype = Symbol(line), xlabel = xval, ylabel = yval, extra_kwargs...)
+                seriestype = Symbol(line), xlabel = xlabel, ylabel = ylabel, extra_kwargs...)
         end
-        plot_diag && Plots.abline!(shared.plt, 1, 0, label = "identity")
+        plot_diag && Plots.abline!(shared.plt, 1, 0, label = "identity", legend = :topleft)
     end
 end
 
