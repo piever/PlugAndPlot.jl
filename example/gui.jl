@@ -1,3 +1,3 @@
 using PlugAndPlot
-datafile = joinpath(Pkg.dir("PlugAndPlot","example"), "school.csv")
+datafile = joinpath(@__DIR__, "school.csv")
 build_window(datafile)

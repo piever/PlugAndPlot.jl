@@ -31,7 +31,7 @@ Reads a csv file and starts `build_window` on the corresponding DataFrame
 """
 function build_window(datafile::AbstractString; kwargs...)
     cols, name_cols = csvread(datafile; header_exists = true)
-    dataset = DataFrame(collect(cols), Symbol.(name_cols))
+    dataset = DataFrame(convert.(Array, collect(cols)), Symbol.(name_cols))
     return build_window(dataset; kwargs...)
 end
 """

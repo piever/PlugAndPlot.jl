@@ -1,6 +1,6 @@
 # Internals
 
-Most of the hard work is outsourced to separate packages: mainly `QML.jl` and `StatPlots.jl`
+Most of the hard work is outsourced to separate packages: mainly `QML.jl`, `StatPlots.jl` and `GroupedErrors.jl`.
 
 ## GUI design
 
@@ -8,4 +8,4 @@ The GUI is designed using `QML.jl` which allows Julia to communicate with the QM
 
 ## Plotting
 
-Plotting is executed via the `StatPlots.jl` package. `Population` plots tap into the `groupapply` functionality whereas `Individual` plots have access to most of `StatPlots.jl` plotting recipes. See the [StatPlots README](https://github.com/JuliaPlots/StatPlots.jl/blob/master/README.md) for more information.
+Plotting is executed via the [StatPlots.jl](https://github.com/JuliaPlots/StatPlots.jl) package. The data manipulation is implemented in [GroupedErrors.jl](https://github.com/piever/GroupedErrors.jl). The GroupedErrors package explains how to obtain the same plots (and some more) with code rather than a GUI.

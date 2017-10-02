@@ -27,7 +27,7 @@ ApplicationWindow {
             model: _options
             onCurrentIndexChanged: {
               if (currentText != "") chosen_value = currentText
-              if (index == 2) plotvalues.show_till_end = (currentIndex <= 3)
+              if (index == 2) plotvalues.show_till_end = (currentIndex <= 2)
               if (index == 3) {
                 plotvalues.show_smoothing = (chosen_value == "continuous") ||
                                             (chosen_value == "binned")

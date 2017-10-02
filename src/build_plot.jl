@@ -1,18 +1,27 @@
+const plot_functions = Dict(
+    :plot => [plot, (args...; kwargs...) -> plot!(shared.plt, args...; kwargs...)],
+    :scatter => [scatter, (args...; kwargs...) -> scatter!(shared.plt, args...; kwargs...)],
+    :groupedbar => [groupedbar, (args...; kwargs...) -> groupedbar!(shared.plt, args...; kwargs...)],
+    :boxplot => [boxplot, (args...; kwargs...) -> boxplot!(shared.plt, args...; kwargs...)],
+    :violin => [violin, (args...; kwargs...) -> violin!(shared.plt, args...; kwargs...)],
+    :marginalhist => [marginalhist, marginalhist]
+)
+
+
 function get_plotvalues(df)
     xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))), true)
     ylist = string.(union([:hazard, :density, :cumulative],names(df)))
     yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(ylist), true)
     plotlist = [
-        "bar",
-        "path",
-        "line",
+        "plot",
         "scatter",
+        "groupedbar",
         "boxplot",
         "violin",
         "marginalhist"
     ]
     plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
-    axislist = ["continuous", "binned", "discrete", "pointbypoint"]
+    axislist = ["pointbypoint", "continuous", "binned", "discrete"]
     axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
     errorlist = union(["none", "bootstrap", "across"], "across " .* string.(names(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
@@ -30,93 +39,76 @@ function get_plot!(shared, in_place)
     selectdata = choose_data(shared)
     xval, yval, line, axis_type, compute_error, dataperpoint =
         getfield.(plotvalues, :chosen_value)
-    group_vars = [Symbol(col.name) for col in selectlist if col.split]
     extra_kwargs = get_kwargs(shared.plotkwargs.value)
     x_info, y_info = plotvalues[1].text_info, plotvalues[2].text_info
     xfunc = get_func(x_info)
     yfunc = get_func(y_info)
-    isrecipe = !(Symbol(line) in [:bar, :path, :scatter, :line])
+    isrecipe = !(Symbol(line) in [:plot, :scatter, :groupedbar])
     isgroupapply = !isrecipe && !(Symbol(axis_type) == :pointbypoint)
     xlabel, ylabel = xval, yval
-    if isgroupapply
-        smooth_kwargs = []
-        if Symbol(axis_type) == :continuous
-            if Symbol(yval) in [:density, :hazard]
-                bandwidth = (shared.smoother.value+1.0)*std(selectdata[Symbol(xval)])/200
-                smooth_kwargs = [(:bandwidth, bandwidth)]
-            end
-            if haskey(selectdata, Symbol(yval))
-                span = (shared.smoother.value+1.0)/100
-                smooth_kwargs = [(:span, span)]
-            end
-        elseif Symbol(axis_type) == :binned
-            nbins = round(Int64, 101-shared.smoother.value)
-            smooth_kwargs = [(:nbins, nbins)]
-        elseif (Symbol(axis_type) == :discrete) && haskey(selectdata, Symbol(yval))
-            smooth_kwargs = [(:estimator, yfunc)]
-        end
+    plot_func = (args...; kwargs...) -> plot_functions[Symbol(line)][in_place ? 2 : 1](args...;
+                xlabel = xlabel, ylabel = ylabel, kwargs..., extra_kwargs...)
+    group_cols = [Symbol(col.name) for col in selectlist if col.split]
 
-        grp_error = groupapply(Symbol(yval),
-            selectdata,
-            Symbol(xval);
-            group = group_vars,
-            compute_error = convert_error_type(compute_error),
-            axis_type = Symbol(axis_type),
-            smooth_kwargs...)
-        linestyle = (line == "line") ? :path : Symbol(line)
-        if in_place
-            plot!(shared.plt, grp_error; line = linestyle,
-                xlabel = xval, ylabel = yval, extra_kwargs...)
+    maybe_nbins = Symbol(axis_type) == :binned ? (round(Int64, 101-shared.smoother.value),) : ()
+
+    s = GroupedErrors.ColumnSelector(selectdata)
+    s = GroupedErrors._splitby(s, group_cols)
+    if (Symbol(axis_type) == :pointbypoint) || isrecipe
+        if !isrecipe && ('=' in dataperpoint)
+            s = GroupedErrors._across(s, Symbol(split(dataperpoint, '=')[2]))
+            if check_equality() && (':' in shared.splitting_var.chosen_value)
+                splitting_var = Symbol(split(shared.splitting_var.chosen_value, ':')[2])
+                s = GroupedErrors._compare(s, splitting_var)
+            end
+        end
+        if isrecipe
+            s = GroupedErrors._x(s, Symbol(xval))
+            s = GroupedErrors._y(s, Symbol(yval))
         else
-            shared.plt = plot(grp_error; line = linestyle,
-                xlabel = xval, ylabel = yval, extra_kwargs...)
+            s = GroupedErrors._x(s, Symbol(xval), xfunc)
+            s = GroupedErrors._y(s, Symbol(yval), yfunc)
         end
     else
-        x_name = StatPlots.new_symbol(:x, selectdata)
-        y_name = StatPlots.new_symbol(:y, selectdata)
-        plot_diag = false
-        if isrecipe || !('=' in dataperpoint)
-            summary_df = copy(selectdata)
-            summary_df[x_name] = summary_df[Symbol(xval)]
-            summary_df[y_name] = summary_df[Symbol(yval)]
-        else
-            datalabel = Symbol(split(dataperpoint, '=')[2])
-            if check_equality() && (':' in shared.splitting_var.chosen_value)
-                plot_diag = true
-                splitting_var = Symbol(split(shared.splitting_var.chosen_value, ':')[2])
-                x_val, y_val = sort(union(selectdata[splitting_var]))
-                summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
-                    splitter = (dd_subject[splitting_var] .== x_val)
-                    DataFrame(;[(x_name, xfunc(dd_subject[splitter, Symbol(xval)])),
-                        (y_name, yfunc(dd_subject[.!splitter, Symbol(yval)]))]...)
-                end
-                xlabel = string("$xval with $splitting_var = $x_val")
-                ylabel = string("$yval with $splitting_var = $y_val")
+        compute_error = convert_error_type(compute_error)
+        if compute_error[1] == :across
+            s = GroupedErrors._across(s, compute_error[2])
+        elseif compute_error[1] == :bootstrap
+            s = GroupedErrors._bootstrap(s, compute_error[2])
+        end
+        s = GroupedErrors._x(s, Symbol(xval), Symbol(axis_type), maybe_nbins...)
+        if Symbol(axis_type) == :continuous
+            if haskey(selectdata, Symbol(yval))
+                s = GroupedErrors._y(s, :locreg, Symbol(yval), span = (shared.smoother.value+1.0)/100)
+            elseif Symbol(yval) in [:density, :hazard]
+                s = GroupedErrors._y(s, Symbol(yval), bandwidth = (shared.smoother.value+1.0)*std(selectdata[Symbol(xval)])/200)
             else
-                summary_df = by(selectdata, vcat(group_vars, datalabel)) do dd_subject
-                    DataFrame(;[(x_name, xfunc(dd_subject[Symbol(xval)])),
-                        (y_name, yfunc(dd_subject[Symbol(yval)]))]...)
-                end
+                s = GroupedErrors._y(s, Symbol(yval))
+            end
+        else
+            s = GroupedErrors._x(s, Symbol(xval), xfunc)
+            if haskey(selectdata, Symbol(yval))
+                s = GroupedErrors._y(s, :locreg, Symbol(yval), estimator = yfunc)
+            else
+                s = GroupedErrors._y(s, Symbol(yval))
             end
         end
-        group_col = [string(["$(summary_df[i,grp]) " for grp in group_vars]...)
-            for i in 1:size(summary_df,1)]
-        if in_place
-            plot!(shared.plt, summary_df, x_name, y_name; group = group_col,
-                seriestype = Symbol(line), xlabel = xlabel, ylabel = ylabel, extra_kwargs...)
-        else
-            shared.plt = plot(summary_df, x_name, y_name; group = group_col,
-                seriestype = Symbol(line), xlabel = xlabel, ylabel = ylabel, extra_kwargs...)
-        end
-        plot_diag && Plots.abline!(shared.plt, 1, 0, label = "identity", legend = :topleft)
     end
+    shared.plt = Symbol(line) == :plot ? @plot(s, plot_func(), :ribbon) : @plot(s, plot_func())
+    get(s.kw, :compare, false) && Plots.abline!(shared.plt, 1, 0, legend = false)
 end
 
 
 function convert_error_type(s::AbstractString)
     n = search(s, ' ')
     if n == 0
-        return Symbol(s)
+        if Symbol(s) == :bootstrap
+            return (:bootstrap, 1000)
+        elseif Symbol(s) == :across
+            return (:across, :all)
+        else
+            return (Symbol(s),)
+        end
     else
         return (Symbol(s[1:n-1]), Symbol(s[n+1:end]))
     end

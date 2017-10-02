@@ -5,3 +5,4 @@ StatPlots 0.4.2
 DataFrames
 GR
 TextParse
+GroupedErrors
