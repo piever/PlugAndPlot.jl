@@ -3,7 +3,6 @@ language: julia
 sudo: required
 os:
   - linux
-  - osx
 julia:
   - 0.6
   - nightly
