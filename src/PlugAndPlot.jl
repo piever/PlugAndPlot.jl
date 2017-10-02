@@ -1,3 +1,4 @@
+__precompile__(false)
 module PlugAndPlot
 
 using QML, StatPlots, DataFrames, TextParse, GroupedErrors, IndexedTables
