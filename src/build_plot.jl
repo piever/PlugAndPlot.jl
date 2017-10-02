@@ -61,13 +61,11 @@ function get_plot!(shared, in_place)
                 splitting_var = Symbol(split(shared.splitting_var.chosen_value, ':')[2])
                 s = GroupedErrors._compare(s, splitting_var)
             end
-        end
-        if isrecipe
-            s = GroupedErrors._x(s, Symbol(xval))
-            s = GroupedErrors._y(s, Symbol(yval))
-        else
             s = GroupedErrors._x(s, Symbol(xval), xfunc)
             s = GroupedErrors._y(s, Symbol(yval), yfunc)
+        else isrecipe
+            s = GroupedErrors._x(s, Symbol(xval))
+            s = GroupedErrors._y(s, Symbol(yval))
         end
     else
         compute_error = convert_error_type(compute_error)
