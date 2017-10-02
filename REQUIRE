@@ -1,8 +1,12 @@
 julia 0.6
 
-QML 0.4.3 0.5-
+QML 0.4.3
 StatPlots 0.4.2
 DataFrames
 GR
 TextParse
 GroupedErrors
+IndexedTables 0.3.2
+IterableTables 0.5.1
+TableTraitsUtils 0.1.0
+TableTraits
