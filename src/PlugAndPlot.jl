@@ -2,7 +2,7 @@ __precompile__(false)
 module PlugAndPlot
 
 using GroupedErrors
-using DataFrames, TextParse, IndexedTables
+using TextParse, IndexedTables
 using QML, StatPlots
 gr()
 

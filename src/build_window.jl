@@ -1,5 +1,5 @@
 mutable struct Shared
-    df::DataFrame
+    df
     selectvalues::Vector{SpinBoxType}
     selectlist::Vector{Column}
     plotvalues::Vector{ComboBoxType}
@@ -8,7 +8,7 @@ mutable struct Shared
     splitting_var::ComboBoxType
     plt::Plots.Plot{Plots.GRBackend}
 end
-shared = Shared(DataFrame(), SpinBoxType[], Column[], ComboBoxType[],
+shared = Shared([], SpinBoxType[], Column[], ComboBoxType[],
     TextBoxEntry(""), SliderEntry(0.0), ComboBoxType("", [""]), plot())
 
 """
@@ -31,24 +31,24 @@ Reads a csv file and starts `build_window` on the corresponding DataFrame
 """
 function build_window(datafile::AbstractString; kwargs...)
     cols, name_cols = csvread(datafile; header_exists = true)
-    dataset = DataFrame(convert.(Array, collect(cols)), Symbol.(name_cols))
+    dataset = table(cols..., names = Symbol.(name_cols))
     return build_window(dataset; kwargs...)
 end
 """
-    build_window(dataset::AbstractDataFrame; nbox = 5)
+    build_window(dataset; nbox = 5)
 
 Creates a GUI to analyze a DataFrame interactively. Data can be selected either
 on continuous columns, with SpinBoxes or on discrete columns with checkboxes,
 provided there are less than `nbox` entries.
 """
-function build_window(dataset::AbstractDataFrame; nbox = 5)
+function build_window(dataset; nbox = 5)
     shared.df = dataset
-    shared.selectlist = [Column(string(name), string.(union(shared.df[name])))
-        for name in names(shared.df) if (1 < length(union(shared.df[name])) < nbox)]
+    shared.selectlist = [Column(string(name), string.(union(columns(shared.df, name))))
+        for name in colnames(shared.df) if (1 < length(union(columns(shared.df, name))) < nbox)]
 
-    shared.selectvalues = [SpinBoxType(string(name), Float64.([extrema(shared.df[name])...]))
-        for name in names(shared.df) if length(union(shared.df[name])) >= nbox &&
-        eltype(shared.df[name]) <: Real]
+    shared.selectvalues = [SpinBoxType(string(name), Float64.([extrema(columns(shared.df, name))...]))
+        for name in colnames(shared.df) if length(union(columns(shared.df, name))) >= nbox &&
+        eltype(columns(shared.df, name)) <: Real]
     # run QML window
     qml_engine = init_qmlapplicationengine()
     @qmlset qmlcontext()._selectlist = ListModel(shared.selectlist)
@@ -57,7 +57,7 @@ function build_window(dataset::AbstractDataFrame; nbox = 5)
     @qmlset qmlcontext()._plotvalues = ListModel(shared.plotvalues)
     @qmlset qmlcontext().choose = shared.plotkwargs
     @qmlset qmlcontext().smoother = shared.smoother
-    splitting_options = ["Don't split"; string.("splitby:",names(shared.df))]
+    splitting_options = ["Don't split"; string.("splitby:",colnames(shared.df))]
     shared.splitting_var = ComboBoxType("spitting_var", splitting_options)
     @qmlset qmlcontext().splitting_var = shared.splitting_var
     qmlfunction("do_plot", PlugAndPlot.do_plot)

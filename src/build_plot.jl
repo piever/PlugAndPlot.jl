@@ -9,8 +9,8 @@ const plot_functions = Dict(
 
 
 function get_plotvalues(df)
-    xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(names(df))), true)
-    ylist = string.(union([:hazard, :density, :cumulative],names(df)))
+    xvalues = ComboBoxType("X AXIS", ComboBoxEntry.(string.(colnames(df))), true)
+    ylist = string.(union([:hazard, :density, :cumulative],colnames(df)))
     yvalues = ComboBoxType("Y AXIS", ComboBoxEntry.(ylist), true)
     plotlist = [
         "plot",
@@ -23,9 +23,9 @@ function get_plotvalues(df)
     plot_type = ComboBoxType("PLOT TYPE", ComboBoxEntry.(plotlist), false)
     axislist = ["pointbypoint", "continuous", "binned", "discrete"]
     axis_type = ComboBoxType("AXIS TYPE", ComboBoxEntry.(axislist) , false)
-    errorlist = union(["none", "bootstrap", "across"], "across " .* string.(names(df)))
+    errorlist = union(["none", "bootstrap", "across"], "across " .* string.(colnames(df)))
     compute_error = ComboBoxType("COMPUTE ERROR",  ComboBoxEntry.(errorlist), false)
-    namelist = union(["pointbypoint"], "point=" .* string.(names(df)))
+    namelist = union(["pointbypoint"], "point=" .* string.(colnames(df)))
     dataperpoint = ComboBoxType("DATA PER POINT",  ComboBoxEntry.(namelist), false)
     return [xvalues, yvalues, plot_type, axis_type, compute_error, dataperpoint]
 end
@@ -76,7 +76,7 @@ function get_plot!(shared, in_place)
         end
         s = GroupedErrors._x(s, Symbol(xval), Symbol(axis_type), maybe_nbins...)
         if Symbol(axis_type) == :continuous
-            if haskey(selectdata, Symbol(yval))
+            if Symbol(yval) in colnames(selectdata)
                 s = GroupedErrors._y(s, :locreg, Symbol(yval), span = (shared.smoother.value+1.0)/100)
             elseif Symbol(yval) in [:density, :hazard]
                 s = GroupedErrors._y(s, Symbol(yval), bandwidth = (shared.smoother.value+1.0)*std(selectdata[Symbol(xval)])/200)
@@ -85,7 +85,7 @@ function get_plot!(shared, in_place)
             end
         else
             s = GroupedErrors._x(s, Symbol(xval), xfunc)
-            if haskey(selectdata, Symbol(yval))
+            if Symbol(yval) in colnames(selectdata)
                 s = GroupedErrors._y(s, :locreg, Symbol(yval), estimator = yfunc)
             else
                 s = GroupedErrors._y(s, Symbol(yval))
