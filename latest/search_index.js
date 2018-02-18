@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "PlugAndPlot.build_window",
     "category": "Function",
-    "text": "build_window(; kwargs...)\n\nStarts the GUI asking for a suitable csv file.\n\n\n\nbuild_window(datafile::AbstractString; kwargs...)\n\nReads a csv file and starts build_window on the corresponding DataFrame\n\n\n\nbuild_window(dataset::AbstractDataFrame; nbox = 5)\n\nCreates a GUI to analyze a DataFrame interactively. Data can be selected either on continuous columns, with SpinBoxes or on discrete columns with checkboxes, provided there are less than nbox entries.\n\n\n\n"
+    "text": "build_window(; kwargs...)\n\nStarts the GUI asking for a suitable csv file.\n\n\n\nbuild_window(datafile::AbstractString; kwargs...)\n\nReads a csv file and starts build_window on the corresponding DataFrame\n\n\n\nbuild_window(dataset; nbox = 5)\n\nCreates a GUI to analyze a data table interactively. Data can be selected either on continuous columns, with SpinBoxes or on discrete columns with checkboxes, provided there are less than nbox entries.\n\n\n\n"
 },
 
 {
