@@ -79,7 +79,7 @@ function get_plot!(shared, in_place)
             if Symbol(yval) in colnames(selectdata)
                 s = GroupedErrors._y(s, :locreg, Symbol(yval), span = (shared.smoother.value+1.0)/100)
             elseif Symbol(yval) in [:density, :hazard]
-                s = GroupedErrors._y(s, Symbol(yval), bandwidth = (shared.smoother.value+1.0)*std(selectdata[Symbol(xval)])/200)
+                s = GroupedErrors._y(s, Symbol(yval), bandwidth = (shared.smoother.value+1.0)*std(column(selectdata, Symbol(xval)))/200)
             else
                 s = GroupedErrors._y(s, Symbol(yval))
             end
