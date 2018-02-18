@@ -2,7 +2,8 @@ julia 0.6
 
 QML 0.4.3
 StatPlots 0.4.2
-DataFrames
+IterableTables
 GR
 TextParse
 GroupedErrors
+JuliaDB

@@ -29,19 +29,18 @@ end
 
 Reads a csv file and starts `build_window` on the corresponding DataFrame
 """
-function build_window(datafile::AbstractString; kwargs...)
-    cols, name_cols = csvread(datafile; header_exists = true)
-    dataset = table(cols..., names = Symbol.(name_cols))
-    return build_window(dataset; kwargs...)
-end
+build_window(datafile::AbstractString; kwargs...) = build_window(JuliaDB.loadtable(datafile); kwargs...)
+
 """
     build_window(dataset; nbox = 5)
 
-Creates a GUI to analyze a DataFrame interactively. Data can be selected either
+Creates a GUI to analyze a data table interactively. Data can be selected either
 on continuous columns, with SpinBoxes or on discrete columns with checkboxes,
 provided there are less than `nbox` entries.
 """
-function build_window(dataset; nbox = 5)
+build_window(dataset; kwargs...) = build_window(table(dataset); kwargs...)
+
+function build_window(dataset::IndexedTables.AbstractIndexedTable; nbox = 5)
     shared.df = dataset
     shared.selectlist = [Column(string(name), string.(union(columns(shared.df, name))))
         for name in colnames(shared.df) if (1 < length(union(columns(shared.df, name))) < nbox)]
