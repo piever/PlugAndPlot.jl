@@ -2,8 +2,9 @@ __precompile__(false)
 module PlugAndPlot
 
 using GroupedErrors
-using DataFrames, TextParse, IndexedTables
+using TextParse, IndexedTables, IterableTables
 using QML, StatPlots
+import JuliaDB
 gr()
 
 export choose_data, build_window

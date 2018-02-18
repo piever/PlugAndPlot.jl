@@ -11,11 +11,11 @@ function choose_data(shared)
 end
 
 function choose_data(a,d)
-    index = broadcast(t -> true, 1:(size(a,1)))
+    index = broadcast(t -> true, 1:length(a))
     for key in keys(d)
-        combine!(index, d[key],a[key])
+        combine!(index, d[key], columns(a, key))
     end
-    return a[index,:]
+    return a[find(index)]
 end
 
 function combine!(index, func::Function, values)
