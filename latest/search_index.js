@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Installation",
     "category": "section",
-    "text": "The package is not yet registered in Julia's package registry, and so it must be installed typing the following command in the Julia REPL:Pkg.clone(\"https://github.com/piever/PlugAndPlot.jl.git\")"
+    "text": "The package is not yet registered in Julia\'s package registry, and so it must be installed typing the following command in the Julia REPL:Pkg.clone(\"https://github.com/piever/PlugAndPlot.jl.git\")"
 },
 
 {
@@ -60,7 +60,7 @@ var documenterSearchIndex = {"docs": [
     "location": "getting_started.html#PlugAndPlot.build_window",
     "page": "Getting Started",
     "title": "PlugAndPlot.build_window",
-    "category": "Function",
+    "category": "function",
     "text": "build_window(; kwargs...)\n\nStarts the GUI asking for a suitable csv file.\n\n\n\nbuild_window(datafile::AbstractString; kwargs...)\n\nReads a csv file and starts build_window on the corresponding DataFrame\n\n\n\nbuild_window(dataset; nbox = 5)\n\nCreates a GUI to analyze a data table interactively. Data can be selected either on continuous columns, with SpinBoxes or on discrete columns with checkboxes, provided there are less than nbox entries.\n\n\n\n"
 },
 
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Selecting/splitting data",
     "category": "section",
-    "text": "Splitting data is extremely simple. Variables with less thank nbox = 5 possible values appear as toggle buttons. If toggled, the data will be split on that variable. You can toggle as many of those as you want.To select data, if the variable has few possible values, you'll see all the values listed as a series of checkboxes. Uncheck the values you want to exclude. For continuous data, you are provided two spinboxes that you can use to select the minimum and maximum acceptable values."
+    "text": "Splitting data is extremely simple. Variables with less thank nbox = 5 possible values appear as toggle buttons. If toggled, the data will be split on that variable. You can toggle as many of those as you want.To select data, if the variable has few possible values, you\'ll see all the values listed as a series of checkboxes. Uncheck the values you want to exclude. For continuous data, you are provided two spinboxes that you can use to select the minimum and maximum acceptable values."
 },
 
 {
@@ -125,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Drawing/saving plots",
     "category": "section",
-    "text": "To draw a plot, simply press the PLOT button. All the valid keywords for Plots.jl can be added in the textbox below the plot, here for example the added keywords are color = [:black :blue], legend = :topleft:(Image: gui)There is an experimental button PLOT! to plot on top of an existing plots, but it's implementation is not very robust and may change.To save the plot, simply press the SAVE button and it will open a saving dialog. The extension you give to the filename will determine its format (i.e. \"myplot.png\" will be saved as png whereas \"myplot.svg\" will be saved in vectorial format)."
+    "text": "To draw a plot, simply press the PLOT button. All the valid keywords for Plots.jl can be added in the textbox below the plot, here for example the added keywords are color = [:black :blue], legend = :topleft:(Image: gui)There is an experimental button PLOT! to plot on top of an existing plots, but it\'s implementation is not very robust and may change.To save the plot, simply press the SAVE button and it will open a saving dialog. The extension you give to the filename will determine its format (i.e. \"myplot.png\" will be saved as png whereas \"myplot.svg\" will be saved in vectorial format)."
 },
 
 {
